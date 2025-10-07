@@ -230,3 +230,95 @@ function fitMapBounds(map, coordinates) {
     const bounds = L.latLngBounds(coordinates.map(coord => [coord.lat, coord.lng]));
     map.fitBounds(bounds, { padding: [50, 50] });
 }
+
+/**
+ * Make a map static (non-interactive) with tap-to-activate overlay
+ * @param {Object} map - Leaflet map instance
+ * @param {string} containerId - ID of the map container element
+ */
+function makeMapStatic(map, containerId) {
+    // Disable all map interactions
+    map.dragging.disable();
+    map.touchZoom.disable();
+    map.doubleClickZoom.disable();
+    map.scrollWheelZoom.disable();
+    map.boxZoom.disable();
+    map.keyboard.disable();
+    if (map.tap) map.tap.disable();
+
+    // Get the map container
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const mapContainer = container.parentElement;
+
+    // Create overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'map-overlay';
+    overlay.innerHTML = `
+        <div class="map-overlay-message">
+            <div class="map-overlay-icon">🗺️</div>
+            <p class="map-overlay-text">اضغط لتفعيل الخريطة للتكبير والتصغير والتنقل</p>
+        </div>
+    `;
+
+    // Create exit button
+    const exitBtn = document.createElement('button');
+    exitBtn.className = 'exit-map-btn';
+    exitBtn.textContent = '✕ إغلاق الخريطة';
+
+    // Add overlay and exit button to container
+    mapContainer.appendChild(overlay);
+    mapContainer.appendChild(exitBtn);
+
+    // Activate map on overlay click
+    overlay.addEventListener('click', () => {
+        activateMap(map, mapContainer);
+    });
+
+    // Deactivate map on exit button click
+    exitBtn.addEventListener('click', () => {
+        deactivateMap(map, mapContainer);
+    });
+}
+
+/**
+ * Activate map interactions
+ * @param {Object} map - Leaflet map instance
+ * @param {HTMLElement} container - Map container element
+ */
+function activateMap(map, container) {
+    // Enable all map interactions
+    map.dragging.enable();
+    map.touchZoom.enable();
+    map.doubleClickZoom.enable();
+    map.scrollWheelZoom.enable();
+    map.boxZoom.enable();
+    map.keyboard.enable();
+    if (map.tap) map.tap.enable();
+
+    // Add active class to container
+    container.classList.add('map-active');
+
+    // Scroll map into view
+    container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+/**
+ * Deactivate map interactions
+ * @param {Object} map - Leaflet map instance
+ * @param {HTMLElement} container - Map container element
+ */
+function deactivateMap(map, container) {
+    // Disable all map interactions
+    map.dragging.disable();
+    map.touchZoom.disable();
+    map.doubleClickZoom.disable();
+    map.scrollWheelZoom.disable();
+    map.boxZoom.disable();
+    map.keyboard.disable();
+    if (map.tap) map.tap.disable();
+
+    // Remove active class from container
+    container.classList.remove('map-active');
+}

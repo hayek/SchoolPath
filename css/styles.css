@@ -81,17 +81,24 @@ p {
 header {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
     z-index: 100;
-    backdrop-filter: blur(20px);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .header-content {
-    padding: var(--spacing-md);
+    padding: 8px var(--spacing-md);
     width: 100%;
     margin: 0 auto;
+}
+
+.header-content h1 {
+    font-size: 18px;
+    margin-bottom: 0;
+}
+
+.header-content p {
+    font-size: 12px;
+    margin-top: 2px;
 }
 
 /* Map Container */
@@ -111,6 +118,99 @@ header {
     height: 100%;
     position: relative;
     z-index: 1;
+}
+
+/* Map Static Overlay */
+.map-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(0.5px);
+    z-index: 1000;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.map-overlay:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.map-overlay-message {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    padding: var(--spacing-md) var(--spacing-lg);
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    pointer-events: none;
+}
+
+.map-overlay-icon {
+    font-size: 20px;
+}
+
+.map-overlay-text {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.map-overlay-subtext {
+    display: none;
+}
+
+/* Map Active State */
+.map-container.map-active .map-overlay {
+    display: none;
+}
+
+.map-container.map-active {
+    box-shadow: 0 4px 20px rgba(0, 122, 255, 0.2);
+}
+
+/* Exit Map Button */
+.exit-map-btn {
+    position: absolute;
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    z-index: 1001;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.map-container.map-active .exit-map-btn {
+    display: block;
+}
+
+.exit-map-btn:hover {
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.exit-map-btn:active {
+    transform: scale(0.95);
 }
 
 /* Trips List */

@@ -50,6 +50,9 @@ async function loadTrip() {
         displayPointsOfInterest();
         setupNavigationButton();
 
+        // Make map static with tap-to-activate overlay
+        makeMapStatic(map, 'map');
+
     } catch (error) {
         console.error('Error loading trip:', error);
         document.getElementById('trip-title').textContent = 'خطأ في تحميل الرحلة';

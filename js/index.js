@@ -11,6 +11,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Load and display all trips
     await loadTrips();
+
+    // Make map static with tap-to-activate overlay
+    makeMapStatic(map, 'map');
 });
 
 // Load all trip JSON files
