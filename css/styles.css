@@ -11,8 +11,8 @@
     --primary-color: #007AFF;
     --background: #FAFAFA;
     --surface: #FFFFFF;
-    --text-primary: #1D1D1F;
-    --text-secondary: #86868B;
+    --text-primary: #000000;
+    --text-secondary: #000000;
     --border: #D2D2D7;
     --shadow: rgba(0, 0, 0, 0.1);
     --radius-sm: 8px;
@@ -40,6 +40,7 @@ h1 {
     font-weight: 700;
     letter-spacing: -0.5px;
     margin-bottom: var(--spacing-md);
+    color: #000000;
 }
 
 h2 {
@@ -47,18 +48,22 @@ h2 {
     font-weight: 600;
     letter-spacing: -0.3px;
     margin-bottom: var(--spacing-sm);
+    color: #000000;
 }
 
 h3 {
     font-size: 20px;
     font-weight: 600;
     margin-bottom: var(--spacing-sm);
+    color: #000000;
 }
 
 p {
-    color: var(--text-secondary);
+    color: #000000;
     font-size: 16px;
+    font-weight: 400;
     line-height: 1.6;
+    white-space: pre-line;
 }
 
 /* Layout */
@@ -97,7 +102,7 @@ header {
 }
 
 .header-content p {
-    font-size: 12px;
+    font-size: 16px;
     margin-top: 2px;
 }
 
@@ -163,7 +168,7 @@ header {
 .map-overlay-text {
     font-size: 15px;
     font-weight: 500;
-    color: var(--text-primary);
+    color: #000000;
     margin: 0;
 }
 
@@ -193,7 +198,7 @@ header {
     padding: 8px 16px;
     font-size: 14px;
     font-weight: 500;
-    color: var(--text-primary);
+    color: #000000;
     cursor: pointer;
     transition: all 0.2s ease;
     display: none;
@@ -281,7 +286,8 @@ header {
     gap: var(--spacing-sm);
     margin-top: var(--spacing-xs);
     font-size: 14px;
-    color: var(--text-secondary);
+    color: #000000;
+    font-weight: 400;
 }
 
 .trip-grades {
@@ -370,7 +376,7 @@ header {
     backdrop-filter: blur(20px);
     border: none;
     font-size: 24px;
-    color: var(--text-primary);
+    color: #000000;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -473,7 +479,7 @@ header {
 
 .btn-secondary {
     background: var(--surface);
-    color: var(--text-primary);
+    color: #000000;
 }
 
 .btn-secondary:hover {
@@ -536,9 +542,9 @@ header {
 
 label {
     display: block;
-    font-weight: 500;
+    font-weight: 600;
     margin-bottom: var(--spacing-xs);
-    color: var(--text-primary);
+    color: #000000;
 }
 
 input[type="text"],
@@ -552,9 +558,10 @@ select {
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
     font-size: 16px;
+    font-weight: 400;
     font-family: inherit;
     background: var(--background);
-    color: var(--text-primary);
+    color: #000000;
 }
 
 input:focus,
@@ -575,14 +582,16 @@ textarea {
     align-items: center;
     justify-content: center;
     padding: var(--spacing-xl);
-    color: var(--text-secondary);
+    color: #000000;
+    font-weight: 400;
 }
 
 /* Empty State */
 .empty-state {
     text-align: center;
     padding: var(--spacing-xl);
-    color: var(--text-secondary);
+    color: #000000;
+    font-weight: 400;
 }
 
 /* Responsive */
