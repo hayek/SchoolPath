@@ -26,9 +26,10 @@ function createMap(elementId, center, zoom) {
  * @param {Array} latlng - [lat, lng]
  * @param {string} color - Hex color code
  * @param {number} number - Number to display
+ * @param {boolean} draggable - Whether marker should be draggable (default: false)
  * @returns {Object} Leaflet marker
  */
-function createNumberedMarker(latlng, color, number) {
+function createNumberedMarker(latlng, color, number, draggable = false) {
     const icon = L.divIcon({
         className: 'custom-marker',
         html: `<div style="
@@ -49,16 +50,17 @@ function createNumberedMarker(latlng, color, number) {
         iconAnchor: [16, 16]
     });
 
-    return L.marker(latlng, { icon: icon });
+    return L.marker(latlng, { icon: icon, draggable: draggable });
 }
 
 /**
  * Create a simple colored marker
  * @param {Array} latlng - [lat, lng]
  * @param {string} color - Hex color code
+ * @param {boolean} draggable - Whether marker should be draggable (default: false)
  * @returns {Object} Leaflet marker
  */
-function createSimpleMarker(latlng, color) {
+function createSimpleMarker(latlng, color, draggable = false) {
     const icon = L.divIcon({
         className: 'custom-marker',
         html: `<div style="
@@ -73,7 +75,7 @@ function createSimpleMarker(latlng, color) {
         iconAnchor: [8, 8]
     });
 
-    return L.marker(latlng, { icon: icon });
+    return L.marker(latlng, { icon: icon, draggable: draggable });
 }
 
 /**

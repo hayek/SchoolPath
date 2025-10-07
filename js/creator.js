@@ -12,11 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize map
     map = createMap('map', CONFIG.HAIFA_CENTER, CONFIG.DEFAULT_ZOOM);
 
-    console.log('Map initialized:', map);
-
     // Add click listener for adding points
     map.on('click', (event) => {
-        console.log('Map clicked! addMode:', addMode, 'event:', event);
         if (addMode) {
             addPoint(event.latlng, addMode);
             addMode = null;
@@ -32,7 +29,6 @@ function setupEventListeners() {
     // Mode buttons
     document.getElementById('add-poi-mode').addEventListener('click', () => {
         addMode = addMode === 'poi' ? null : 'poi';
-        console.log('POI button clicked, addMode is now:', addMode);
         updateModeButtons();
     });
 
@@ -86,17 +82,16 @@ function addPoint(latlng, type) {
         marker = createNumberedMarker(
             [coordinates.lat, coordinates.lng],
             color,
-            points.filter(p => p.type === 'poi').length + 1
+            points.filter(p => p.type === 'poi').length + 1,
+            true // draggable
         );
     } else {
         marker = createSimpleMarker(
             [coordinates.lat, coordinates.lng],
-            '#666'
+            '#666',
+            true // draggable
         );
     }
-
-    // Make marker draggable
-    marker.dragging.enable();
 
     // Add drag event
     marker.on('dragend', (event) => {
@@ -229,9 +224,9 @@ function updateMarkerNumbers() {
             const newMarker = createNumberedMarker(
                 [point.coordinates.lat, point.coordinates.lng],
                 color,
-                poiCount
+                poiCount,
+                true // draggable
             );
-            newMarker.dragging.enable();
             newMarker.on('dragend', (event) => {
                 const newLatLng = event.target.getLatLng();
                 point.coordinates = {
