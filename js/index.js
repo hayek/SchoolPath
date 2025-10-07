@@ -105,6 +105,9 @@ function displayTripsOnMap() {
 // Display trips in the list
 function displayTripsList() {
     const tripsList = document.getElementById('trips-list');
+    tripsList.style.display = 'flex';
+    tripsList.style.flexDirection = 'column';
+    tripsList.style.gap = 'var(--spacing-md)';
 
     if (trips.length === 0) {
         tripsList.innerHTML = `

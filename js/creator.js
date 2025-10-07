@@ -385,5 +385,5 @@ function exportTrip() {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
-    alert(`تم تنزيل الملف ${id}.json بنجاح!\n\nقم برفعه إلى مجلد routes وأضف اسمه (${id}.json) إلى مصفوفة trips في ملف trips-index.json`);
+    alert(`تم تنزيل الملف ${id}.json بنجاح!\n\nالخطوات التالية:\n1. قم برفع الملف إلى مجلد routes\n2. قم بعمل commit و push إلى GitHub\n3. سيتم تحديث قائمة الرحلات تلقائياً!`);
 }

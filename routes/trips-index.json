@@ -1,7 +1,8 @@
 {
     "trips": [
         "carmel-center-tour.json",
+        "downtown-haifa-tour.json",
         "hadar-heritage-walk.json",
-        "downtown-haifa-tour.json"
+        "testtour.json"
     ]
 }

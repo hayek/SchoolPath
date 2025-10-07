@@ -1,0 +1,63 @@
+name: Update Trips Index
+
+on:
+  push:
+    paths:
+      - 'routes/*.json'
+    branches:
+      - main
+
+jobs:
+  update-index:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate trips-index.json
+        run: |
+          cd routes
+
+          # Collect all JSON files except trips-index.json
+          files=()
+          for file in *.json; do
+            if [ "$file" != "trips-index.json" ]; then
+              files+=("$file")
+            fi
+          done
+
+          # Sort files
+          IFS=$'\n' sorted=($(sort <<<"${files[*]}"))
+          unset IFS
+
+          # Create trips-index.json
+          echo '{' > trips-index.json
+          echo '    "trips": [' >> trips-index.json
+
+          for i in "${!sorted[@]}"; do
+            if [ $i -eq $((${#sorted[@]} - 1)) ]; then
+              # Last item, no comma
+              echo "        \"${sorted[$i]}\"" >> trips-index.json
+            else
+              # Not last item, add comma
+              echo "        \"${sorted[$i]}\"," >> trips-index.json
+            fi
+          done
+
+          echo '    ]' >> trips-index.json
+          echo '}' >> trips-index.json
+
+          cd ..
+
+          echo "✅ trips-index.json updated!"
+          cat routes/trips-index.json
+
+      - name: Commit and push if changed
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add routes/trips-index.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update trips-index.json" && git push)
