@@ -1,0 +1,86 @@
+{
+  "id": "testtour2",
+  "title": "test",
+  "description": "test desk",
+  "color": "#ad3e00",
+  "grades": [
+    1,
+    2
+  ],
+  "pointsOfInterest": [
+    {
+      "id": "poi-1759854416185-0",
+      "name": "a",
+      "description": "a",
+      "coordinates": {
+        "lat": 32.79506006110049,
+        "lng": 34.99141216278077
+      },
+      "photo": "",
+      "missionLink": "",
+      "order": 1
+    },
+    {
+      "id": "poi-1759854416185-1",
+      "name": "b",
+      "description": "b",
+      "coordinates": {
+        "lat": 32.79051326123548,
+        "lng": 35.00385761260987
+      },
+      "photo": "",
+      "missionLink": "",
+      "order": 4
+    },
+    {
+      "id": "poi-1759854416185-2",
+      "name": "c",
+      "description": "c",
+      "coordinates": {
+        "lat": 32.78719322878711,
+        "lng": 34.9957036972046
+      },
+      "photo": "",
+      "missionLink": "",
+      "order": 7
+    }
+  ],
+  "secondaryPoints": [
+    {
+      "id": "secondary-1759854416185-0",
+      "coordinates": {
+        "lat": 32.792967118609496,
+        "lng": 34.99415874481202
+      },
+      "order": 2,
+      "afterPOI": "poi-1759854416185-0"
+    },
+    {
+      "id": "secondary-1759854416185-1",
+      "coordinates": {
+        "lat": 32.79087412686031,
+        "lng": 34.998021125793464
+      },
+      "order": 3,
+      "afterPOI": "poi-1759854416185-0"
+    },
+    {
+      "id": "secondary-1759854416185-2",
+      "coordinates": {
+        "lat": 32.788348036738256,
+        "lng": 35.00188350677491
+      },
+      "order": 5,
+      "afterPOI": "poi-1759854416185-1"
+    },
+    {
+      "id": "secondary-1759854416185-3",
+      "coordinates": {
+        "lat": 32.78769845911058,
+        "lng": 34.99879360198975
+      },
+      "order": 6,
+      "afterPOI": "poi-1759854416185-1"
+    }
+  ]
+}
