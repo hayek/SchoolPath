@@ -213,7 +213,7 @@ function displayPointsOfInterest() {
 
     poiList.innerHTML = sortedPOIs.map((poi, index) => `
         <div class="poi-card" id="poi-${poi.id}">
-            ${poi.photo ? `<img src="${poi.photo}" alt="${poi.name}" class="poi-image">` : ''}
+            ${poi.photo ? `<img src="${poi.photo}" alt="${poi.name}" class="poi-image" onclick="openImageFullscreen('${poi.photo}')">` : ''}
             <div style="flex: 1;">
                 <div class="poi-header">
                     <div>
@@ -232,6 +232,27 @@ function displayPointsOfInterest() {
             </div>
         </div>
     `).join('');
+}
+
+// Open image in fullscreen
+function openImageFullscreen(imageSrc) {
+    const fullscreenOverlay = document.createElement('div');
+    fullscreenOverlay.className = 'image-fullscreen-overlay';
+    fullscreenOverlay.innerHTML = `
+        <button class="image-fullscreen-close" onclick="closeImageFullscreen()">✕</button>
+        <img src="${imageSrc}" alt="Fullscreen image" class="image-fullscreen">
+    `;
+    document.body.appendChild(fullscreenOverlay);
+    document.body.style.overflow = 'hidden';
+}
+
+// Close fullscreen image
+function closeImageFullscreen() {
+    const overlay = document.querySelector('.image-fullscreen-overlay');
+    if (overlay) {
+        overlay.remove();
+        document.body.style.overflow = '';
+    }
 }
 
 // Setup navigation button

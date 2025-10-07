@@ -325,6 +325,67 @@ header {
     height: 200px;
     object-fit: cover;
     border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.poi-image:hover {
+    opacity: 0.9;
+}
+
+.poi-image:active {
+    opacity: 0.8;
+}
+
+/* Fullscreen Image Overlay */
+.image-fullscreen-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-lg);
+}
+
+.image-fullscreen {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: var(--radius-md);
+}
+
+.image-fullscreen-close {
+    position: absolute;
+    top: var(--spacing-lg);
+    right: var(--spacing-lg);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: none;
+    font-size: 24px;
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.image-fullscreen-close:hover {
+    background: white;
+    transform: scale(1.05);
+}
+
+.image-fullscreen-close:active {
+    transform: scale(0.95);
 }
 
 .poi-header {
