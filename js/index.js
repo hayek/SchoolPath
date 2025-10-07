@@ -122,7 +122,6 @@ function displayTripsList() {
                 <h3>${trip.title}</h3>
                 <p>${trip.description}</p>
                 <div class="trip-meta">
-                    <span>📅 ${formatDate(trip.date)}</span>
                     <span class="trip-grades">
                         ${trip.grades.map(grade => `<span class="grade-badge">الصف ${grade}</span>`).join('')}
                     </span>
@@ -130,14 +129,4 @@ function displayTripsList() {
             </div>
         </div>
     `).join('');
-}
-
-// Format date for display
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('ar-SA', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
 }

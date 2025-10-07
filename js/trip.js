@@ -69,10 +69,6 @@ function displayTripInfo() {
     document.getElementById('trip-details').innerHTML = `
         <div class="flex flex-column gap-sm">
             <div class="flex gap-sm items-center">
-                <strong>التاريخ:</strong>
-                <span>${formatDate(trip.date)}</span>
-            </div>
-            <div class="flex gap-sm items-center">
                 <strong>الصفوف:</strong>
                 <div class="trip-grades">
                     ${trip.grades.map(grade => `<span class="grade-badge">الصف ${grade}</span>`).join('')}
@@ -199,15 +195,5 @@ function setupNavigationButton() {
 
         // Open in new window/tab
         window.open(navigationUrl, '_blank');
-    });
-}
-
-// Format date for display
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('ar-SA', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
     });
 }

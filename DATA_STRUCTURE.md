@@ -12,7 +12,6 @@ Each trip is stored as a JSON file in the `routes/` folder. The filename should 
   "title": "Trip Title",
   "description": "Brief description of the trip",
   "color": "#FF5733",
-  "date": "2024-05-15",
   "grades": [1, 2, 3],
   "pointsOfInterest": [
     {
@@ -48,7 +47,6 @@ Each trip is stored as a JSON file in the `routes/` folder. The filename should 
 - **title**: Display name of the trip
 - **description**: Brief overview of what students will see/learn
 - **color**: Hex color code for the route on the map
-- **date**: Scheduled date for the trip (ISO format)
 - **grades**: Array of grade numbers this trip is suitable for
 - **pointsOfInterest**: Array of main POIs
   - **id**: Unique identifier for the POI

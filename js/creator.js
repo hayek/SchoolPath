@@ -12,8 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize map
     map = createMap('map', CONFIG.HAIFA_CENTER, CONFIG.DEFAULT_ZOOM);
 
+    console.log('Map initialized:', map);
+
     // Add click listener for adding points
     map.on('click', (event) => {
+        console.log('Map clicked! addMode:', addMode, 'event:', event);
         if (addMode) {
             addPoint(event.latlng, addMode);
             addMode = null;
@@ -29,6 +32,7 @@ function setupEventListeners() {
     // Mode buttons
     document.getElementById('add-poi-mode').addEventListener('click', () => {
         addMode = addMode === 'poi' ? null : 'poi';
+        console.log('POI button clicked, addMode is now:', addMode);
         updateModeButtons();
     });
 
@@ -49,9 +53,6 @@ function setupEventListeners() {
 
     // Export button
     document.getElementById('export-btn').addEventListener('click', exportTrip);
-
-    // Set default date to today
-    document.getElementById('trip-date').valueAsDate = new Date();
 }
 
 // Update mode buttons visual state
@@ -316,7 +317,6 @@ function exportTrip() {
     const title = document.getElementById('trip-title').value;
     const description = document.getElementById('trip-description').value;
     const color = document.getElementById('trip-color').value;
-    const date = document.getElementById('trip-date').value;
 
     const gradesCheckboxes = document.querySelectorAll('input[name="grades"]:checked');
     const grades = Array.from(gradesCheckboxes).map(cb => parseInt(cb.value));
@@ -372,7 +372,6 @@ function exportTrip() {
         title: title,
         description: description,
         color: color,
-        date: date,
         grades: grades,
         pointsOfInterest: pois,
         secondaryPoints: secondaryPoints
