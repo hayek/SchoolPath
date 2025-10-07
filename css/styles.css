@@ -9,8 +9,8 @@
 
 :root {
     --primary-color: #007AFF;
-    --background: #FFFFFF;
-    --surface: #F5F5F7;
+    --background: #FAFAFA;
+    --surface: #FFFFFF;
     --text-primary: #1D1D1F;
     --text-secondary: #86868B;
     --border: #D2D2D7;
@@ -69,13 +69,12 @@ p {
 }
 
 header {
-    background: var(--background);
+    background: var(--surface);
     border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
     z-index: 100;
     backdrop-filter: blur(20px);
-    background: rgba(255, 255, 255, 0.8);
 }
 
 .header-content {
@@ -106,7 +105,8 @@ header {
     border-radius: var(--radius-md);
     padding: var(--spacing-md);
     margin-bottom: var(--spacing-md);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease;
+    border: 1px solid var(--border);
 }
 
 .card:active {
@@ -118,13 +118,14 @@ header {
 }
 
 .card-clickable:hover {
-    box-shadow: 0 4px 16px var(--shadow);
+    border-color: var(--primary-color);
 }
 
 .trip-card {
     display: flex;
     gap: var(--spacing-md);
-    align-items: flex-start;
+    align-items: stretch;
+    min-height: 120px;
 }
 
 .trip-color-indicator {
@@ -136,6 +137,19 @@ header {
 }
 
 .trip-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.trip-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+}
+
+.trip-header-content {
     flex: 1;
 }
 
@@ -203,6 +217,34 @@ header {
     font-weight: 600;
     font-size: 14px;
     flex-shrink: 0;
+}
+
+/* Copy Button */
+.copy-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.copy-btn:hover {
+    background: var(--background);
+    color: var(--primary-color);
+}
+
+.copy-btn:active {
+    transform: scale(0.9);
+}
+
+.copy-btn.copied {
+    color: #34C759;
 }
 
 /* Buttons */
