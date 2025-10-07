@@ -122,14 +122,40 @@ function displayTripsList() {
         <div class="card card-clickable trip-card" onclick="location.href='trip.html?id=${trip.id}'">
             <div class="trip-color-indicator" style="background-color: ${trip.color}"></div>
             <div class="trip-info">
-                <h3>${trip.title}</h3>
-                <p>${trip.description}</p>
-                <div class="trip-meta">
-                    <span class="trip-grades">
-                        ${trip.grades.map(grade => `<span class="grade-badge">الصف ${grade}</span>`).join('')}
-                    </span>
+                <div class="trip-header">
+                    <div class="trip-header-content">
+                        <h3>${trip.title}</h3>
+                        <p>${trip.description}</p>
+                        <div class="trip-meta">
+                            <span class="trip-grades">
+                                ${trip.grades.map(grade => `<span class="grade-badge">الصف ${grade}</span>`).join('')}
+                            </span>
+                        </div>
+                    </div>
+                    <button class="copy-btn" onclick="event.stopPropagation(); copyTripUrl('${trip.id}', this)" title="نسخ رابط الرحلة">
+                        📋
+                    </button>
                 </div>
             </div>
         </div>
     `).join('');
+}
+
+// Copy trip URL to clipboard
+function copyTripUrl(tripId, button) {
+    const url = `${window.location.origin}${window.location.pathname.replace('index.html', '')}trip.html?id=${tripId}`;
+
+    navigator.clipboard.writeText(url).then(() => {
+        // Show success feedback
+        button.textContent = '✓';
+        button.classList.add('copied');
+
+        setTimeout(() => {
+            button.textContent = '📋';
+            button.classList.remove('copied');
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy URL:', err);
+        alert('فشل نسخ الرابط');
+    });
 }

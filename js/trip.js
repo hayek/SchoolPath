@@ -68,6 +68,12 @@ function displayTripInfo() {
 
     document.getElementById('trip-details').innerHTML = `
         <div class="flex flex-column gap-sm">
+            <div class="flex justify-between items-center">
+                <strong>مشاركة الرحلة:</strong>
+                <button class="copy-btn" onclick="copyCurrentTripUrl(this)" title="نسخ رابط الرحلة">
+                    📋
+                </button>
+            </div>
             <div class="flex gap-sm items-center">
                 <strong>الصفوف:</strong>
                 <div class="trip-grades">
@@ -195,5 +201,24 @@ function setupNavigationButton() {
 
         // Open in new window/tab
         window.open(navigationUrl, '_blank');
+    });
+}
+
+// Copy current trip URL to clipboard
+function copyCurrentTripUrl(button) {
+    const url = window.location.href;
+
+    navigator.clipboard.writeText(url).then(() => {
+        // Show success feedback
+        button.textContent = '✓';
+        button.classList.add('copied');
+
+        setTimeout(() => {
+            button.textContent = '📋';
+            button.classList.remove('copied');
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy URL:', err);
+        alert('فشل نسخ الرابط');
     });
 }
