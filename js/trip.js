@@ -238,6 +238,11 @@ function displayPointsOfInterest() {
 function setupNavigationButton() {
     const navigateBtn = document.getElementById('navigate-btn');
 
+    if (!navigateBtn) {
+        console.log('Navigate button not found in DOM');
+        return;
+    }
+
     navigateBtn.addEventListener('click', () => {
         // Combine all points in order (POIs and secondary points)
         const allPoints = [
