@@ -557,6 +557,19 @@ textarea {
     }
 }
 
+/* Location Error Banner */
+.location-error-banner {
+    background-color: #FFF3CD;
+    color: #856404;
+    padding: var(--spacing-md);
+    text-align: center;
+    font-size: 14px;
+    border-bottom: 1px solid #FFE69C;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
 /* Utility Classes */
 .mt-sm { margin-top: var(--spacing-sm); }
 .mt-md { margin-top: var(--spacing-md); }

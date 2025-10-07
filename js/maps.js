@@ -461,7 +461,10 @@ function addUserLocationTracking(map) {
         updateLocation,
         (error) => {
             console.error('Error getting location:', error);
-            alert('تعذر الحصول على موقعك. يرجى التحقق من إعدادات الموقع.');
+            const errorBanner = document.getElementById('location-error');
+            if (errorBanner) {
+                errorBanner.style.display = 'block';
+            }
         },
         {
             enableHighAccuracy: true,
