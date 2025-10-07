@@ -34,7 +34,7 @@ async function loadTrips() {
         );
 
         // Display trips on map
-        displayTripsOnMap();
+        await displayTripsOnMap();
 
         // Display trips list
         displayTripsList();
@@ -52,26 +52,23 @@ async function loadTrips() {
 }
 
 // Display all trips on the unified map
-function displayTripsOnMap() {
+async function displayTripsOnMap() {
     // Clear existing polylines
     polylines.forEach(polyline => map.removeLayer(polyline));
     polylines = [];
 
     const allCoordinates = [];
 
-    trips.forEach(trip => {
+    // Fetch walking routes for all trips
+    for (const trip of trips) {
         // Combine POIs and secondary points, sort by order
         const allPoints = [
             ...trip.pointsOfInterest.map(poi => ({ ...poi, type: 'poi' })),
             ...trip.secondaryPoints.map(sp => ({ ...sp, type: 'secondary' }))
         ].sort((a, b) => a.order - b.order);
 
-        // Create path from coordinates
-        const path = allPoints.map(point => point.coordinates);
-
-        // Create polyline using utility function
-        const polyline = createPolyline(map, path, trip.color, 4);
-        polylines.push(polyline);
+        // Fetch walking route from Geoapify
+        await fetchWalkingRouteForTrip(trip, allPoints);
 
         // Add markers for POIs
         trip.pointsOfInterest.forEach((poi, index) => {
@@ -94,11 +91,67 @@ function displayTripsOnMap() {
             // Collect coordinates for bounds
             allCoordinates.push(poi.coordinates);
         });
-    });
+    }
 
     // Fit map to show all trips
     if (allCoordinates.length > 0) {
         fitMapBounds(map, allCoordinates);
+    }
+}
+
+// Fetch walking route from Geoapify for a trip on index page
+async function fetchWalkingRouteForTrip(trip, points) {
+    try {
+        // Build waypoints string: lat1,lng1|lat2,lng2|...
+        const waypoints = points.map(p =>
+            `${p.coordinates.lat},${p.coordinates.lng}`
+        ).join('|');
+
+        const url = `https://api.geoapify.com/v1/routing?waypoints=${waypoints}&mode=walk&apiKey=${CONFIG.GEOAPIFY_API_KEY}`;
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        console.log('Geoapify response for', trip.title, ':', data); // Debug
+
+        if (data.features && data.features.length > 0 && data.features[0].geometry) {
+            const geometry = data.features[0].geometry;
+            let routeCoordinates;
+
+            // Handle both LineString and MultiLineString
+            if (geometry.type === 'LineString') {
+                routeCoordinates = geometry.coordinates;
+            } else if (geometry.type === 'MultiLineString') {
+                // Flatten MultiLineString into a single array
+                routeCoordinates = geometry.coordinates.flat();
+            } else {
+                throw new Error('Unsupported geometry type: ' + geometry.type);
+            }
+
+            // Convert from [lng, lat] to [lat, lng] for Leaflet
+            const leafletCoords = routeCoordinates.map(coord => [coord[1], coord[0]]);
+
+            // Draw the walking route
+            const polyline = L.polyline(leafletCoords, {
+                color: trip.color,
+                weight: 4,
+                opacity: 0.7
+            }).addTo(map);
+
+            polylines.push(polyline);
+        } else {
+            // Fallback to straight lines if routing fails
+            console.warn('Routing API returned no results for trip:', trip.title);
+            const path = points.map(point => point.coordinates);
+            const polyline = createPolyline(map, path, trip.color, 4);
+            polylines.push(polyline);
+        }
+    } catch (error) {
+        console.error('Error fetching walking route for trip:', trip.title, error);
+        // Fallback to straight lines
+        const path = points.map(point => point.coordinates);
+        const polyline = createPolyline(map, path, trip.color, 4);
+        polylines.push(polyline);
     }
 }
 
@@ -133,7 +186,7 @@ function displayTripsList() {
                         </div>
                     </div>
                     <button class="copy-btn" onclick="event.stopPropagation(); copyTripUrl('${trip.id}', this)" title="نسخ رابط الرحلة">
-                        📋
+                        <img src="assets/copy.svg" alt="نسخ">
                     </button>
                 </div>
             </div>
@@ -147,11 +200,12 @@ function copyTripUrl(tripId, button) {
 
     navigator.clipboard.writeText(url).then(() => {
         // Show success feedback
-        button.textContent = '✓';
+        const img = button.querySelector('img');
+        button.innerHTML = '<span style="color: #34C759; font-size: 18px;">✓</span>';
         button.classList.add('copied');
 
         setTimeout(() => {
-            button.textContent = '📋';
+            button.innerHTML = '<img src="assets/copy.svg" alt="نسخ">';
             button.classList.remove('copied');
         }, 2000);
     }).catch(err => {

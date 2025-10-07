@@ -46,7 +46,7 @@ async function loadTrip() {
 
         // Display trip information
         displayTripInfo();
-        displayTripOnMap();
+        await displayTripOnMap();
         displayPointsOfInterest();
         setupNavigationButton();
 
@@ -71,7 +71,7 @@ function displayTripInfo() {
             <div class="flex justify-between items-center">
                 <strong>مشاركة الرحلة:</strong>
                 <button class="copy-btn" onclick="copyCurrentTripUrl(this)" title="نسخ رابط الرحلة">
-                    📋
+                    <img src="assets/copy.svg" alt="نسخ">
                 </button>
             </div>
             <div class="flex gap-sm items-center">
@@ -89,20 +89,17 @@ function displayTripInfo() {
 }
 
 // Display trip route on map
-function displayTripOnMap() {
+async function displayTripOnMap() {
     // Combine POIs and secondary points, sort by order
     const allPoints = [
         ...trip.pointsOfInterest.map(poi => ({ ...poi, type: 'poi' })),
         ...trip.secondaryPoints.map(sp => ({ ...sp, type: 'secondary' }))
     ].sort((a, b) => a.order - b.order);
 
-    // Create path from coordinates
-    const path = allPoints.map(point => point.coordinates);
-
-    // Create polyline
-    createPolyline(map, path, trip.color, 5);
-
     const allCoordinates = [];
+
+    // Fetch walking route from Geoapify
+    await fetchWalkingRoute(allPoints);
 
     // Add markers for POIs
     trip.pointsOfInterest.forEach((poi, index) => {
@@ -141,6 +138,58 @@ function displayTripOnMap() {
 
     // Fit map to show entire route
     fitMapBounds(map, allCoordinates);
+}
+
+// Fetch walking route from Geoapify
+async function fetchWalkingRoute(points) {
+    try {
+        // Build waypoints string: lat1,lng1|lat2,lng2|...
+        const waypoints = points.map(p =>
+            `${p.coordinates.lat},${p.coordinates.lng}`
+        ).join('|');
+
+        const url = `https://api.geoapify.com/v1/routing?waypoints=${waypoints}&mode=walk&apiKey=${CONFIG.GEOAPIFY_API_KEY}`;
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        console.log('Geoapify response:', data); // Debug
+
+        if (data.features && data.features.length > 0 && data.features[0].geometry) {
+            const geometry = data.features[0].geometry;
+            let routeCoordinates;
+
+            // Handle both LineString and MultiLineString
+            if (geometry.type === 'LineString') {
+                routeCoordinates = geometry.coordinates;
+            } else if (geometry.type === 'MultiLineString') {
+                // Flatten MultiLineString into a single array
+                routeCoordinates = geometry.coordinates.flat();
+            } else {
+                throw new Error('Unsupported geometry type: ' + geometry.type);
+            }
+
+            // Convert from [lng, lat] to [lat, lng] for Leaflet
+            const leafletCoords = routeCoordinates.map(coord => [coord[1], coord[0]]);
+
+            // Draw the walking route
+            L.polyline(leafletCoords, {
+                color: trip.color,
+                weight: 5,
+                opacity: 0.7
+            }).addTo(map);
+        } else {
+            // Fallback to straight lines if routing fails
+            console.warn('Routing API returned no results, using straight lines');
+            const path = points.map(point => point.coordinates);
+            createPolyline(map, path, trip.color, 5);
+        }
+    } catch (error) {
+        console.error('Error fetching walking route:', error);
+        // Fallback to straight lines
+        const path = points.map(point => point.coordinates);
+        createPolyline(map, path, trip.color, 5);
+    }
 }
 
 // Display points of interest list
@@ -210,11 +259,11 @@ function copyCurrentTripUrl(button) {
 
     navigator.clipboard.writeText(url).then(() => {
         // Show success feedback
-        button.textContent = '✓';
+        button.innerHTML = '<span style="color: #34C759; font-size: 18px;">✓</span>';
         button.classList.add('copied');
 
         setTimeout(() => {
-            button.textContent = '📋';
+            button.innerHTML = '<img src="assets/copy.svg" alt="نسخ">';
             button.classList.remove('copied');
         }, 2000);
     }).catch(err => {
