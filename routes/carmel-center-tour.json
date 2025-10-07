@@ -1,0 +1,66 @@
+{
+  "id": "carmel-center-tour",
+  "title": "جولة في وسط الكرمل",
+  "description": "رحلة للتعرف على وسط الكرمل التاريخي والثقافي في حيفا",
+  "color": "#007AFF",
+  "date": "2024-05-15",
+  "grades": [4, 5, 6],
+  "pointsOfInterest": [
+    {
+      "id": "poi-carmel-center-1",
+      "name": "ساحة باريس",
+      "description": "ساحة مركزية في قلب الكرمل، سميت على اسم العاصمة الفرنسية. يستخدم المكان كنقطة التقاء وساحة ثقافية مع المطاعم والمقاهي",
+      "coordinates": {
+        "lat": 32.7940,
+        "lng": 34.9896
+      },
+      "photo": "images/paris-square.jpg",
+      "missionLink": "https://example.com/mission/paris-square",
+      "order": 1
+    },
+    {
+      "id": "poi-carmel-center-2",
+      "name": "مسرح حيفا",
+      "description": "مؤسسة ثقافية مركزية في المدينة، تأسست عام 1961. يقدم المسرح مجموعة متنوعة من العروض والمسرحيات على مدار السنة",
+      "coordinates": {
+        "lat": 32.7950,
+        "lng": 34.9910
+      },
+      "photo": "images/haifa-theater.jpg",
+      "missionLink": "https://example.com/mission/haifa-theater",
+      "order": 3
+    },
+    {
+      "id": "poi-carmel-center-3",
+      "name": "حديقة بنيامين",
+      "description": "حديقة عامة خضراء ومرتبة، مكان رائع للاستراحة واللعب. تحتوي الحديقة على ألعاب للأطفال ومساحات خضراء",
+      "coordinates": {
+        "lat": 32.7965,
+        "lng": 34.9880
+      },
+      "photo": "images/binyamin-garden.jpg",
+      "missionLink": "https://example.com/mission/binyamin-garden",
+      "order": 5
+    }
+  ],
+  "secondaryPoints": [
+    {
+      "id": "secondary-carmel-center-1",
+      "coordinates": {
+        "lat": 32.7945,
+        "lng": 34.9903
+      },
+      "order": 2,
+      "afterPOI": "poi-carmel-center-1"
+    },
+    {
+      "id": "secondary-carmel-center-2",
+      "coordinates": {
+        "lat": 32.7958,
+        "lng": 34.9895
+      },
+      "order": 4,
+      "afterPOI": "poi-carmel-center-2"
+    }
+  ]
+}

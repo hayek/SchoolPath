@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منشئ الرحلات - PathSchool</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .creator-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-lg);
+        }
+
+        @media (min-width: 1024px) {
+            .creator-layout {
+                grid-template-columns: 400px 1fr;
+            }
+        }
+
+        .creator-sidebar {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            height: fit-content;
+            position: sticky;
+            top: calc(var(--spacing-lg) + 60px);
+        }
+
+        .creator-map-section {
+            min-height: 500px;
+        }
+
+        .points-manager {
+            margin-top: var(--spacing-lg);
+        }
+
+        .point-item {
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .point-item.dragging {
+            opacity: 0.5;
+        }
+
+        .drag-handle {
+            cursor: move;
+            padding: var(--spacing-xs);
+            color: var(--text-secondary);
+        }
+
+        .btn-danger {
+            background: #FF3B30;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #D93025;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-xs);
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="btn btn-link">← رجوع</a>
+            <h1>منشئ الرحلات</h1>
+            <p>أنشئ مسار رحلة جديد للطلاب</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="creator-layout">
+            <!-- Sidebar with form -->
+            <div class="creator-sidebar">
+                <h2>تفاصيل الرحلة</h2>
+
+                <form id="trip-form">
+                    <div class="form-group">
+                        <label for="trip-id">معرّف فريد (بالإنجليزية، بدون مسافات)</label>
+                        <input type="text" id="trip-id" required
+                               pattern="[a-z0-9-]+"
+                               placeholder="downtown-haifa-tour">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="trip-title">اسم الرحلة</label>
+                        <input type="text" id="trip-title" required placeholder="جولة في وسط حيفا">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="trip-description">الوصف</label>
+                        <textarea id="trip-description" required
+                                  placeholder="رحلة للتعرف على وسط مدينة حيفا التاريخي"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="trip-color">لون المسار</label>
+                        <input type="color" id="trip-color" value="#007AFF">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="trip-date">التاريخ</label>
+                        <input type="date" id="trip-date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>الصفوف</label>
+                        <div class="checkbox-group">
+                            ${[1,2,3,4,5,6,7,8].map(grade => `
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="grades" value="${grade}">
+                                    <span>الصف ${grade}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Points Manager -->
+                <div class="points-manager">
+                    <h3>النقاط في المسار</h3>
+                    <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: var(--spacing-md);">
+                        انقر على الخريطة لإضافة النقاط. اسحب لتغيير الترتيب.
+                    </p>
+
+                    <div class="flex gap-sm mb-md">
+                        <button type="button" id="add-poi-mode" class="btn btn-primary btn-small">
+                            + نقطة اهتمام
+                        </button>
+                        <button type="button" id="add-secondary-mode" class="btn btn-secondary btn-small">
+                            + نقطة توجيه
+                        </button>
+                    </div>
+
+                    <div id="points-list"></div>
+                </div>
+
+                <!-- Export -->
+                <div class="mt-lg">
+                    <button type="button" id="export-btn" class="btn btn-primary" style="width: 100%;">
+                        💾 تصدير JSON
+                    </button>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: var(--spacing-xs);">
+                        سيتم تنزيل الملف تلقائيًا. قم برفعه إلى مجلد routes
+                    </p>
+                </div>
+            </div>
+
+            <!-- Map Section -->
+            <div class="creator-map-section">
+                <div class="map-container" style="height: 80vh;">
+                    <div id="map"></div>
+                </div>
+
+                <div id="poi-editor" class="card mt-lg" style="display: none;">
+                    <h3>تحرير نقطة الاهتمام</h3>
+                    <form id="poi-form">
+                        <div class="form-group">
+                            <label for="poi-name">اسم المكان</label>
+                            <input type="text" id="poi-name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="poi-description">الوصف</label>
+                            <textarea id="poi-description" required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="poi-photo">مسار الصورة</label>
+                            <input type="text" id="poi-photo" placeholder="images/poi-1.jpg">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="poi-mission">رابط المهمة</label>
+                            <input type="url" id="poi-mission" placeholder="https://example.com/mission">
+                        </div>
+
+                        <div class="flex gap-sm">
+                            <button type="submit" class="btn btn-primary">حفظ</button>
+                            <button type="button" id="cancel-poi-edit" class="btn btn-secondary">إلغاء</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="config.js"></script>
+    <script src="js/maps.js"></script>
+    <script src="js/creator.js"></script>
+</body>
+</html>

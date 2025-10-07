@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>رحلة - PathSchool</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="btn btn-link">← العودة لقائمة الرحلات</a>
+            <h1 id="trip-title">جارٍ التحميل...</h1>
+            <p id="trip-description"></p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+
+        <section>
+            <div id="trip-info" class="card">
+                <h2>تفاصيل الرحلة</h2>
+                <div id="trip-details"></div>
+            </div>
+        </section>
+
+        <section class="mt-lg">
+            <h2>نقاط الاهتمام في المسار</h2>
+            <div id="poi-list" class="poi-list loading">
+                <p>جارٍ تحميل نقاط الاهتمام...</p>
+            </div>
+        </section>
+    </main>
+
+    <div class="bottom-nav">
+        <div class="bottom-nav-content">
+            <button id="navigate-btn" class="btn btn-primary" style="width: 100%;">
+                🧭 ابدأ التنقل في خرائط Google
+            </button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="config.js"></script>
+    <script src="js/maps.js"></script>
+    <script src="js/trip.js"></script>
+</body>
+</html>
