@@ -322,3 +322,176 @@ function deactivateMap(map, container) {
     // Remove active class from container
     container.classList.remove('map-active');
 }
+
+/**
+ * Add user location tracking to map with compass orientation on mobile
+ * @param {Object} map - Leaflet map instance
+ * @returns {Object} Object with locationMarker, accuracyCircle, and cleanup function
+ */
+function addUserLocationTracking(map) {
+    let locationMarker = null;
+    let accuracyCircle = null;
+    let watchId = null;
+    let orientationListener = null;
+    let currentHeading = 0;
+
+    // Check if geolocation is supported
+    if (!navigator.geolocation) {
+        console.error('Geolocation is not supported by this browser');
+        return null;
+    }
+
+    // Create custom user location icon
+    function createLocationIcon(heading = 0) {
+        // If heading is available (mobile with compass), show directional arrow
+        if (heading !== null && heading !== 0) {
+            return L.divIcon({
+                className: 'user-location-marker',
+                html: `<div style="
+                    width: 0;
+                    height: 0;
+                    border-left: 10px solid transparent;
+                    border-right: 10px solid transparent;
+                    border-bottom: 20px solid #007AFF;
+                    transform: rotate(${heading}deg);
+                    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+                "></div>`,
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+            });
+        } else {
+            // Standard blue dot for non-compass devices
+            return L.divIcon({
+                className: 'user-location-marker',
+                html: `<div style="
+                    width: 16px;
+                    height: 16px;
+                    background-color: #007AFF;
+                    border-radius: 50%;
+                    border: 3px solid white;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                "></div>`,
+                iconSize: [22, 22],
+                iconAnchor: [11, 11]
+            });
+        }
+    }
+
+    // Update marker position and heading
+    function updateLocation(position) {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        const accuracy = position.coords.accuracy;
+
+        if (!locationMarker) {
+            // Create new marker
+            locationMarker = L.marker([lat, lng], {
+                icon: createLocationIcon(currentHeading),
+                zIndexOffset: 1000
+            }).addTo(map);
+
+            // Create accuracy circle
+            accuracyCircle = L.circle([lat, lng], {
+                radius: accuracy,
+                color: '#007AFF',
+                fillColor: '#007AFF',
+                fillOpacity: 0.1,
+                weight: 1,
+                opacity: 0.3
+            }).addTo(map);
+
+            // Center map on user location on first load
+            map.setView([lat, lng], 16);
+        } else {
+            // Update existing marker
+            locationMarker.setLatLng([lat, lng]);
+            locationMarker.setIcon(createLocationIcon(currentHeading));
+            accuracyCircle.setLatLng([lat, lng]);
+            accuracyCircle.setRadius(accuracy);
+        }
+    }
+
+    // Handle orientation/compass data (mobile only)
+    function handleOrientation(event) {
+        // Get compass heading
+        // alpha: rotation around z-axis (0-360 degrees)
+        let heading = null;
+
+        if (event.alpha !== null) {
+            // For iOS devices with absolute orientation
+            if (event.webkitCompassHeading !== undefined) {
+                heading = event.webkitCompassHeading;
+            } else {
+                // For Android: alpha gives rotation, we need to convert
+                // 0 = North, 90 = East, 180 = South, 270 = West
+                heading = 360 - event.alpha;
+            }
+
+            currentHeading = heading;
+
+            // Update marker icon with new heading
+            if (locationMarker) {
+                locationMarker.setIcon(createLocationIcon(heading));
+            }
+        }
+    }
+
+    // Request device orientation permission (required for iOS 13+)
+    async function requestOrientationPermission() {
+        if (typeof DeviceOrientationEvent !== 'undefined' &&
+            typeof DeviceOrientationEvent.requestPermission === 'function') {
+            try {
+                const permission = await DeviceOrientationEvent.requestPermission();
+                if (permission === 'granted') {
+                    window.addEventListener('deviceorientation', handleOrientation, true);
+                    orientationListener = true;
+                }
+            } catch (error) {
+                console.log('Device orientation permission denied:', error);
+            }
+        } else if (window.DeviceOrientationEvent) {
+            // For non-iOS or older iOS versions
+            window.addEventListener('deviceorientation', handleOrientation, true);
+            orientationListener = true;
+        }
+    }
+
+    // Start watching user location
+    watchId = navigator.geolocation.watchPosition(
+        updateLocation,
+        (error) => {
+            console.error('Error getting location:', error);
+            alert('تعذر الحصول على موقعك. يرجى التحقق من إعدادات الموقع.');
+        },
+        {
+            enableHighAccuracy: true,
+            maximumAge: 0,
+            timeout: 5000
+        }
+    );
+
+    // Start compass tracking on mobile
+    requestOrientationPermission();
+
+    // Cleanup function
+    function cleanup() {
+        if (watchId) {
+            navigator.geolocation.clearWatch(watchId);
+        }
+        if (orientationListener) {
+            window.removeEventListener('deviceorientation', handleOrientation, true);
+        }
+        if (locationMarker) {
+            map.removeLayer(locationMarker);
+        }
+        if (accuracyCircle) {
+            map.removeLayer(accuracyCircle);
+        }
+    }
+
+    return {
+        locationMarker,
+        accuracyCircle,
+        cleanup
+    };
+}

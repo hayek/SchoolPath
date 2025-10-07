@@ -2,6 +2,7 @@
 
 let map;
 let trip = null;
+let userLocationTracking = null;
 
 // Get trip ID from URL
 const urlParams = new URLSearchParams(window.location.search);
@@ -17,6 +18,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Initialize map
     map = createMap('map', CONFIG.HAIFA_CENTER, CONFIG.DEFAULT_ZOOM);
+
+    // Add user location tracking with compass
+    userLocationTracking = addUserLocationTracking(map);
 
     // Load trip data
     await loadTrip();
