@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محرر المسارات - PathSchool</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .path-list {
+            display: grid;
+            gap: var(--spacing-md);
+        }
+
+        .path-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            border: 1px solid var(--border);
+        }
+
+        .path-card h3 {
+            margin: 0 0 var(--spacing-sm) 0;
+            color: var(--text-primary);
+        }
+
+        .path-card p {
+            color: var(--text-secondary);
+            margin: 0 0 var(--spacing-md) 0;
+            font-size: 14px;
+        }
+
+        .path-info {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .path-info-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .path-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        .loading {
+            text-align: center;
+            padding: var(--spacing-xl);
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="btn btn-link">← رجوع</a>
+            <h1>محرر المسارات</h1>
+            <p>إدارة وتحرير جميع المسارات المتاحة</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section>
+            <div class="flex justify-between items-center mb-lg">
+                <h2>المسارات الموجودة</h2>
+                <a href="creator.html" class="btn btn-primary">+ مسار جديد</a>
+            </div>
+
+            <div id="paths-list" class="path-list loading">
+                <p>جارٍ تحميل المسارات...</p>
+            </div>
+        </section>
+    </main>
+
+    <script src="config.js"></script>
+    <script src="js/editor.js"></script>
+</body>
+</html>

@@ -116,27 +116,32 @@ async function displayTripOnMap() {
             index + 1
         );
 
-        // Add popup
-        marker.bindPopup(`
-            <div style="padding: 12px; max-width: 250px;">
-                <h3 style="margin: 0 0 8px 0; font-size: 18px;">${poi.name}</h3>
-                <p style="margin: 0; font-size: 14px; color: #666;">${poi.description}</p>
-                ${poi.missionLink ? `
-                    <a href="${poi.missionLink}" target="_blank"
-                       style="display: inline-block; margin-top: 8px; color: #007AFF; text-decoration: none;">
-                       عرض المهمة ←
-                    </a>
-                ` : ''}
+        // Add popup with only title
+        const popup = L.popup({
+            closeButton: true,
+            autoClose: false,
+            closeOnClick: false
+        }).setContent(`
+            <div style="padding: 8px; cursor: pointer;" class="poi-popup" data-poi-id="${poi.id}">
+                <h3 style="margin: 0; font-size: 16px;">${poi.name}</h3>
             </div>
         `);
 
+        marker.bindPopup(popup);
         marker.addTo(map);
 
-        // Click handler to scroll to POI in list
-        marker.on('click', () => {
-            const poiElement = document.getElementById(`poi-${poi.id}`);
-            if (poiElement) {
-                poiElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Click handler on popup to scroll to POI in list
+        marker.on('popupopen', () => {
+            const popupElement = document.querySelector(`.poi-popup[data-poi-id="${poi.id}"]`);
+            if (popupElement) {
+                popupElement.addEventListener('click', () => {
+                    const poiElement = document.getElementById(`poi-${poi.id}`);
+                    if (poiElement) {
+                        poiElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        // Close the popup after scrolling
+                        map.closePopup();
+                    }
+                });
             }
         });
 
@@ -149,6 +154,13 @@ async function displayTripOnMap() {
 
 // Fetch walking route from Geoapify
 async function fetchWalkingRoute(points) {
+    // Check if we should use straight lines instead of routing API
+    if (CONFIG.USE_STRAIGHT_LINES) {
+        const path = points.map(point => point.coordinates);
+        createPolyline(map, path, trip.color, 5);
+        return;
+    }
+
     try {
         // Build waypoints string: lat1,lng1|lat2,lng2|...
         const waypoints = points.map(p =>

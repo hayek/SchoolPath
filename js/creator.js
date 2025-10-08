@@ -8,7 +8,7 @@ let addMode = null; // 'poi' | 'secondary' | null
 let editingPointIndex = null;
 
 // Initialize map when page loads
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // Initialize map
     map = createMap('map', CONFIG.HAIFA_CENTER, CONFIG.DEFAULT_ZOOM);
 
@@ -16,12 +16,14 @@ document.addEventListener('DOMContentLoaded', () => {
     map.on('click', (event) => {
         if (addMode) {
             addPoint(event.latlng, addMode);
-            addMode = null;
-            updateModeButtons();
+            // Don't clear addMode - keep it active until user deactivates
         }
     });
 
     setupEventListeners();
+
+    // Check if we're editing an existing trip
+    await checkForEditMode();
 });
 
 // Setup all event listeners
@@ -89,7 +91,8 @@ function addPoint(latlng, type) {
         marker = createSimpleMarker(
             [coordinates.lat, coordinates.lng],
             '#666',
-            true // draggable
+            true, // draggable
+            points.length + 1 // overall position number
         );
     }
 
@@ -135,10 +138,7 @@ function addPoint(latlng, type) {
     updatePointsList();
     updatePolyline();
 
-    // If POI, open editor
-    if (type === 'poi') {
-        editPoint(points.length - 1);
-    }
+    // Don't auto-open editor - let user add multiple points first
 }
 
 // Edit a point
@@ -245,7 +245,73 @@ function updateMarkerNumbers() {
             markers[index] = newMarker;
 
             poiCount++;
+        } else {
+            // Update secondary marker number
+            const newMarker = createSimpleMarker(
+                [point.coordinates.lat, point.coordinates.lng],
+                '#666',
+                true, // draggable
+                index + 1 // overall position number
+            );
+            newMarker.on('dragend', (event) => {
+                const newLatLng = event.target.getLatLng();
+                point.coordinates = {
+                    lat: newLatLng.lat,
+                    lng: newLatLng.lng
+                };
+                updatePolyline();
+            });
+
+            map.removeLayer(point.marker);
+            newMarker.addTo(map);
+            point.marker = newMarker;
+            markers[index] = newMarker;
         }
+    });
+}
+
+// Setup drag and drop for points list
+let draggedIndex = null;
+
+function setupDragAndDrop() {
+    const pointItems = document.querySelectorAll('.point-item');
+
+    pointItems.forEach(item => {
+        item.addEventListener('dragstart', (e) => {
+            draggedIndex = parseInt(e.target.dataset.index);
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        });
+
+        item.addEventListener('dragend', (e) => {
+            e.target.classList.remove('dragging');
+            draggedIndex = null;
+        });
+
+        item.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        });
+
+        item.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const dropIndex = parseInt(e.currentTarget.dataset.index);
+
+            if (draggedIndex !== null && draggedIndex !== dropIndex) {
+                // Reorder points array
+                const draggedPoint = points[draggedIndex];
+                points.splice(draggedIndex, 1);
+
+                // Adjust index if dragging down (after removal, indices shift)
+                const newIndex = draggedIndex < dropIndex ? dropIndex - 1 : dropIndex;
+                points.splice(newIndex, 0, draggedPoint);
+
+                // Update display and map
+                updatePointsList();
+                updatePolyline();
+                updateMarkerNumbers();
+            }
+        });
     });
 }
 
@@ -259,8 +325,9 @@ function updatePointsList() {
     }
 
     pointsList.innerHTML = points.map((point, index) => `
-        <div class="point-item">
+        <div class="point-item" draggable="true" data-index="${index}">
             <div class="flex items-center gap-sm" style="flex: 1;">
+                <span class="drag-handle" style="cursor: grab;">☰</span>
                 <span style="font-weight: 600; color: var(--text-secondary);">${index + 1}</span>
                 <span>
                     ${point.type === 'poi' ?
@@ -269,13 +336,14 @@ function updatePointsList() {
                 </span>
             </div>
             <div class="flex gap-sm">
-                ${index > 0 ? `<button onclick="movePointUp(${index})" class="btn btn-link btn-small">↑</button>` : ''}
-                ${index < points.length - 1 ? `<button onclick="movePointDown(${index})" class="btn btn-link btn-small">↓</button>` : ''}
                 ${point.type === 'poi' ? `<button onclick="editPoint(${index})" class="btn btn-secondary btn-small">✏️</button>` : ''}
                 <button onclick="deletePoint(${index})" class="btn btn-danger btn-small">🗑️</button>
             </div>
         </div>
     `).join('');
+
+    // Setup drag and drop
+    setupDragAndDrop();
 }
 
 // Update polyline on map
@@ -297,6 +365,150 @@ document.getElementById('trip-color').addEventListener('change', () => {
     updateMarkerNumbers();
     updatePolyline();
 });
+
+// Check if we're in edit mode and load trip data
+async function checkForEditMode() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tripId = urlParams.get('edit');
+
+    if (!tripId) return;
+
+    try {
+        // Load trips index
+        const indexResponse = await fetch('routes/trips-index.json');
+        const tripsIndex = await indexResponse.json();
+
+        // Find and load the trip
+        for (const tripFile of tripsIndex.trips) {
+            const response = await fetch(`routes/${tripFile}`);
+            const tripData = await response.json();
+
+            if (tripData.id === tripId) {
+                loadTripData(tripData);
+                break;
+            }
+        }
+    } catch (error) {
+        console.error('Error loading trip for editing:', error);
+        alert('خطأ في تحميل المسار للتحرير');
+    }
+}
+
+// Load trip data into the creator
+function loadTripData(trip) {
+    // Fill form fields
+    document.getElementById('trip-id').value = trip.id;
+    document.getElementById('trip-title').value = trip.title;
+    document.getElementById('trip-description').value = trip.description;
+    document.getElementById('trip-color').value = trip.color;
+
+    // Set grades checkboxes
+    const gradeCheckboxes = document.querySelectorAll('input[name="grades"]');
+    gradeCheckboxes.forEach(checkbox => {
+        checkbox.checked = trip.grades.includes(parseInt(checkbox.value));
+    });
+
+    // Combine POIs and secondary points, sort by order
+    const allPoints = [
+        ...trip.pointsOfInterest.map(poi => ({ ...poi, type: 'poi' })),
+        ...trip.secondaryPoints.map(sp => ({ ...sp, type: 'secondary' }))
+    ].sort((a, b) => a.order - b.order);
+
+    // Load points onto map
+    allPoints.forEach(point => {
+        const latlng = L.latLng(point.coordinates.lat, point.coordinates.lng);
+
+        if (point.type === 'poi') {
+            // Create POI marker
+            const marker = createNumberedMarker(
+                [point.coordinates.lat, point.coordinates.lng],
+                trip.color,
+                trip.pointsOfInterest.filter(p => p.order <= point.order).length,
+                true // draggable
+            );
+
+            // Add drag event
+            marker.on('dragend', (event) => {
+                const newLatLng = event.target.getLatLng();
+                const pointIndex = markers.indexOf(marker);
+                if (pointIndex >= 0) {
+                    points[pointIndex].coordinates = {
+                        lat: newLatLng.lat,
+                        lng: newLatLng.lng
+                    };
+                    updatePolyline();
+                }
+            });
+
+            // Add click listener for editing
+            marker.on('click', () => {
+                const pointIndex = markers.indexOf(marker);
+                editPoint(pointIndex);
+            });
+
+            marker.addTo(map);
+
+            const pointData = {
+                type: 'poi',
+                coordinates: point.coordinates,
+                data: {
+                    name: point.name,
+                    description: point.description,
+                    photo: point.photo,
+                    missionLink: point.missionLink
+                },
+                marker: marker
+            };
+
+            points.push(pointData);
+            markers.push(marker);
+
+        } else {
+            // Create secondary point marker
+            const marker = createSimpleMarker(
+                [point.coordinates.lat, point.coordinates.lng],
+                '#666',
+                true, // draggable
+                points.length + 1
+            );
+
+            // Add drag event
+            marker.on('dragend', (event) => {
+                const newLatLng = event.target.getLatLng();
+                const pointIndex = markers.indexOf(marker);
+                if (pointIndex >= 0) {
+                    points[pointIndex].coordinates = {
+                        lat: newLatLng.lat,
+                        lng: newLatLng.lng
+                    };
+                    updatePolyline();
+                }
+            });
+
+            marker.addTo(map);
+
+            const pointData = {
+                type: 'secondary',
+                coordinates: point.coordinates,
+                data: null,
+                marker: marker
+            };
+
+            points.push(pointData);
+            markers.push(marker);
+        }
+    });
+
+    // Update display
+    updatePointsList();
+    updatePolyline();
+
+    // Fit map to show all points
+    if (points.length > 0) {
+        const bounds = L.latLngBounds(points.map(p => [p.coordinates.lat, p.coordinates.lng]));
+        map.fitBounds(bounds, { padding: [50, 50] });
+    }
+}
 
 // Export trip as JSON
 function exportTrip() {

@@ -6,5 +6,7 @@ const CONFIG = {
     HAIFA_CENTER: { lat: 32.7940, lng: 34.9896 },
     DEFAULT_ZOOM: 14,
     // Geoapify map style - options: osm-carto, osm-bright, klokantech-basic, dark-matter, positron
-    MAP_STYLE: 'osm-bright'
+    MAP_STYLE: 'osm-bright',
+    // Route display mode: true = use straight lines, false = use walking paths from routing API
+    USE_STRAIGHT_LINES: true
 };

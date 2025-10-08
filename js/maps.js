@@ -58,9 +58,10 @@ function createNumberedMarker(latlng, color, number, draggable = false) {
  * @param {Array} latlng - [lat, lng]
  * @param {string} color - Hex color code
  * @param {boolean} draggable - Whether marker should be draggable (default: false)
+ * @param {number} number - Optional number to display on marker
  * @returns {Object} Leaflet marker
  */
-function createSimpleMarker(latlng, color, draggable = false) {
+function createSimpleMarker(latlng, color, draggable = false, number = null) {
     const icon = L.divIcon({
         className: 'custom-marker',
         html: `<div style="
@@ -70,7 +71,13 @@ function createSimpleMarker(latlng, color, draggable = false) {
             border-radius: 50%;
             border: 2px solid white;
             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        "></div>`,
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 10px;
+        ">${number !== null ? number : ''}</div>`,
         iconSize: [16, 16],
         iconAnchor: [8, 8]
     });
