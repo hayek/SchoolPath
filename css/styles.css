@@ -414,6 +414,38 @@ header {
     flex-shrink: 0;
 }
 
+.poi-description {
+    position: relative;
+}
+
+.poi-description.collapsed {
+    max-height: calc(1.6em * 5); /* 5 lines based on line-height: 1.6 */
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+}
+
+.poi-description-toggle {
+    background: transparent;
+    border: none;
+    color: var(--primary-color);
+    cursor: pointer;
+    padding: 4px 0;
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 4px;
+    transition: opacity 0.2s ease;
+}
+
+.poi-description-toggle:hover {
+    opacity: 0.7;
+}
+
+.poi-description-toggle:active {
+    transform: scale(0.95);
+}
+
 /* Copy Button */
 .copy-btn {
     background: transparent;

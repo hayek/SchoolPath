@@ -233,7 +233,10 @@ function displayPointsOfInterest() {
                             <div class="poi-number">${index + 1}</div>
                             <h3 style="margin: 0;">${poi.name}</h3>
                         </div>
-                        <p>${poi.description}</p>
+                        <div class="poi-description-container">
+                            <p class="poi-description collapsed" id="poi-desc-${poi.id}">${poi.description}</p>
+                            <button class="poi-description-toggle" id="poi-toggle-${poi.id}" onclick="toggleDescription('${poi.id}')">اقرأ المزيد</button>
+                        </div>
                     </div>
                 </div>
                 ${poi.missionLink ? `
@@ -244,6 +247,46 @@ function displayPointsOfInterest() {
             </div>
         </div>
     `).join('');
+
+    // Check each description and hide toggle button if not needed
+    setTimeout(() => {
+        sortedPOIs.forEach(poi => {
+            const descElement = document.getElementById(`poi-desc-${poi.id}`);
+            const toggleBtn = document.getElementById(`poi-toggle-${poi.id}`);
+
+            // Check if description is actually longer than 5 lines
+            if (descElement && toggleBtn) {
+                // Get the collapsed height
+                const collapsedHeight = descElement.clientHeight;
+
+                // Temporarily expand to check actual height
+                descElement.classList.remove('collapsed');
+                const fullHeight = descElement.scrollHeight;
+                descElement.classList.add('collapsed');
+
+                // If content fits in 5 lines (with small tolerance), hide the toggle button
+                if (fullHeight <= collapsedHeight + 5) {
+                    toggleBtn.style.display = 'none';
+                }
+            }
+        });
+    }, 100);
+}
+
+// Toggle POI description expand/collapse
+function toggleDescription(poiId) {
+    const descElement = document.getElementById(`poi-desc-${poiId}`);
+    const toggleBtn = document.getElementById(`poi-toggle-${poiId}`);
+
+    if (descElement && toggleBtn) {
+        if (descElement.classList.contains('collapsed')) {
+            descElement.classList.remove('collapsed');
+            toggleBtn.textContent = 'إخفاء';
+        } else {
+            descElement.classList.add('collapsed');
+            toggleBtn.textContent = 'اقرأ المزيد';
+        }
+    }
 }
 
 // Open image in fullscreen
