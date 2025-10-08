@@ -84,9 +84,7 @@ async function displayTripsOnMap() {
             // Add popup with trip info
             marker.bindPopup(`
                 <div style="padding: 8px; cursor: pointer;" onclick="location.href='trip.html?id=${trip.id}'">
-                    <h3 style="margin: 0 0 4px 0; font-size: 16px;">${trip.title}</h3>
-                    <p style="margin: 0 0 8px 0; font-size: 14px; color: #666;">${trip.description}</p>
-                    <div style="font-size: 12px; color: #999;">انقر للمزيد من التفاصيل</div>
+                    <h3 style="margin: 0; font-size: 16px;">${trip.title}</h3>
                 </div>
             `);
 
