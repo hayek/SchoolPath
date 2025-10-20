@@ -23,7 +23,7 @@
       "photo": "",
       "missionLink": "",
       "hasLearningActivity": false,
-      "learningActivityText": "",
+      "learningTasks": [],
       "order": 1
     },
     {
@@ -38,7 +38,7 @@
       "photo": "images/carmilit.jpg",
       "missionLink": "",
       "hasLearningActivity": true,
-      "learningActivityText": "استكشاف النافورة",
+      "learningTasks": ["استكشاف النافورة"],
       "order": 5
     },
     {
@@ -53,7 +53,7 @@
       "photo": "images/ganHaem.jpg",
       "missionLink": "",
       "hasLearningActivity": true,
-      "learningActivityText": "جمع الأوراق",
+      "learningTasks": ["جمع الأوراق"],
       "order": 14
     },
     {
@@ -68,7 +68,7 @@
       "photo": "images/zooMap.jpg",
       "missionLink": "",
       "hasLearningActivity": true,
-      "learningActivityText": "تحديد الحيوانات",
+      "learningTasks": ["تحديد الحيوانات"],
       "order": 16
     }
   ],

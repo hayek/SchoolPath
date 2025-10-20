@@ -237,13 +237,16 @@
                         <div class="form-group">
                             <label class="checkbox-label">
                                 <input type="checkbox" id="poi-has-learning-activity">
-                                <span>هل هناك نشاط تعليمي؟</span>
+                                <span>هل هناك أنشطة تعليمية؟</span>
                             </label>
                         </div>
 
                         <div class="form-group">
-                            <label for="poi-learning-activity-text">نص النشاط التعليمي (اختياري)</label>
-                            <input type="text" id="poi-learning-activity-text" placeholder="مثال: جمع الأوراق، استكشاف النافورة">
+                            <label>الأنشطة التعليمية</label>
+                            <div id="learning-tasks-list" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px;">
+                                <!-- Learning tasks will be added here dynamically -->
+                            </div>
+                            <button type="button" id="add-learning-task-btn" class="btn btn-secondary btn-small">+ إضافة نشاط تعليمي</button>
                         </div>
 
                         <div class="flex gap-sm">

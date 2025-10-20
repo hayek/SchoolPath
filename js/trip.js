@@ -241,13 +241,18 @@ function displayPointsOfInterest() {
             </div>
         ` : '';
 
-        const learningActivityBox = poi.hasLearningActivity ? `
+        const learningActivityBox = poi.hasLearningActivity && poi.learningTasks && poi.learningTasks.length > 0 ? `
             <div style="padding: 24px; background: #ffe8f0; border-left: 6px solid #ff69b4; border-radius: var(--radius-md); display: flex; flex-direction: column; margin-top: var(--spacing-md);">
                 <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
                     <img src="assets/idea.svg" alt="نشاط تعليمي" style="width: 28px; height: 28px; filter: invert(0.2);">
-                    <strong style="color: #d946a6; font-size: 16px;">نشاط تعليمي</strong>
+                    <strong style="color: #d946a6; font-size: 16px;">${poi.learningTasks.length > 1 ? 'أنشطة تعليمية' : 'نشاط تعليمي'}</strong>
                 </div>
-                <p style="margin: 0; color: #7c2d54; font-size: 14px; line-height: 1.6;">${poi.learningActivityText || 'هناك نشاط تعليمي في هذا المكان'}</p>
+                ${poi.learningTasks.map((task, index) => `
+                    <div style="display: flex; align-items: flex-start; gap: 12px; margin-top: ${index > 0 ? '12px' : '0'};">
+                        <span style="color: #d946a6; font-size: 14px; font-weight: 600; flex-shrink: 0;">${index + 1}.</span>
+                        <p style="margin: 0; color: #7c2d54; font-size: 14px; line-height: 1.6;">${task}</p>
+                    </div>
+                `).join('')}
             </div>
         ` : '';
 

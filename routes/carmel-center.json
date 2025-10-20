@@ -19,7 +19,7 @@
       "photo": "",
       "missionLink": "",
       "hasLearningActivity": false,
-      "learningActivityText": "",
+      "learningTasks": [],
       "order": 1
     },
     {
@@ -34,7 +34,7 @@
       "photo": "images/kneeset-elmalek.jpg",
       "missionLink": "",
       "hasLearningActivity": false,
-      "learningActivityText": "",
+      "learningTasks": [],
       "order": 5
     },
     {
@@ -49,7 +49,7 @@
       "photo": "images/jame3-jrena.jpg",
       "missionLink": "",
       "hasLearningActivity": false,
-      "learningActivityText": "",
+      "learningTasks": [],
       "order": 11
     },
     {
@@ -64,7 +64,7 @@
       "photo": "images/carmilit.jpg",
       "missionLink": "",
       "hasLearningActivity": false,
-      "learningActivityText": "",
+      "learningTasks": [],
       "order": 16
     },
     {
@@ -79,7 +79,7 @@
       "photo": "images/luis.jpg",
       "missionLink": "",
       "hasLearningActivity": true,
-      "learningActivityText": "أَنَا أَتَعَلَّمُ",
+      "learningTasks": ["أَنَا أَتَعَلَّمُ"],
       "order": 29
     }
   ],

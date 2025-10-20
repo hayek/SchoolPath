@@ -6,6 +6,7 @@ let polyline = null;
 let points = []; // { type: 'poi' | 'secondary', coordinates, data, marker }
 let addMode = null; // 'poi' | 'secondary' | null
 let editingPointIndex = null;
+let currentLearningTasks = []; // Temporary array for learning tasks being edited
 
 // Initialize map when page loads
 document.addEventListener('DOMContentLoaded', async () => {
@@ -47,6 +48,11 @@ function setupEventListeners() {
 
     document.getElementById('cancel-poi-edit').addEventListener('click', () => {
         closePoiEditor();
+    });
+
+    // Learning tasks button
+    document.getElementById('add-learning-task-btn').addEventListener('click', () => {
+        addLearningTaskField();
     });
 
     // Export button
@@ -129,7 +135,7 @@ function addPoint(latlng, type) {
             photo: '',
             missionLink: '',
             hasLearningActivity: false,
-            learningActivityText: ''
+            learningTasks: []
         } : null,
         marker: marker
     };
@@ -163,7 +169,10 @@ function editPoint(index) {
     document.getElementById('poi-photo').value = photoValue;
     document.getElementById('poi-mission').value = point.data.missionLink || '';
     document.getElementById('poi-has-learning-activity').checked = point.data.hasLearningActivity || false;
-    document.getElementById('poi-learning-activity-text').value = point.data.learningActivityText || '';
+
+    // Load learning tasks
+    currentLearningTasks = point.data.learningTasks ? [...point.data.learningTasks] : [];
+    displayLearningTasks();
 
     document.getElementById('poi-editor').style.display = 'block';
     document.getElementById('poi-editor').scrollIntoView({ behavior: 'smooth' });
@@ -188,7 +197,7 @@ function savePOIEdit() {
         photo: photoValue,
         missionLink: document.getElementById('poi-mission').value,
         hasLearningActivity: document.getElementById('poi-has-learning-activity').checked,
-        learningActivityText: document.getElementById('poi-learning-activity-text').value
+        learningTasks: [...currentLearningTasks]
     };
 
     closePoiEditor();
@@ -198,8 +207,10 @@ function savePOIEdit() {
 // Close POI editor
 function closePoiEditor() {
     editingPointIndex = null;
+    currentLearningTasks = [];
     document.getElementById('poi-editor').style.display = 'none';
     document.getElementById('poi-form').reset();
+    displayLearningTasks();
 }
 
 // Delete a point
@@ -422,6 +433,48 @@ document.getElementById('trip-color').addEventListener('change', () => {
     updatePolyline();
 });
 
+// Learning tasks management functions
+function addLearningTaskField(value = '') {
+    currentLearningTasks.push(value);
+    displayLearningTasks();
+}
+
+function removeLearningTask(index) {
+    currentLearningTasks.splice(index, 1);
+    displayLearningTasks();
+}
+
+function updateLearningTask(index, value) {
+    currentLearningTasks[index] = value;
+}
+
+function displayLearningTasks() {
+    const container = document.getElementById('learning-tasks-list');
+
+    if (currentLearningTasks.length === 0) {
+        container.innerHTML = '<p style="font-size: 14px; color: var(--text-secondary);">لا توجد أنشطة تعليمية بعد</p>';
+        return;
+    }
+
+    container.innerHTML = currentLearningTasks.map((task, index) => `
+        <div style="display: flex; gap: 8px; align-items: center;">
+            <input
+                type="text"
+                value="${task}"
+                onchange="updateLearningTask(${index}, this.value)"
+                placeholder="نشاط تعليمي ${index + 1}"
+                style="flex: 1; padding: 8px; border: 1px solid var(--border); border-radius: 4px;"
+            >
+            <button
+                type="button"
+                onclick="removeLearningTask(${index})"
+                class="btn btn-danger btn-small"
+                style="flex-shrink: 0;"
+            >🗑️</button>
+        </div>
+    `).join('');
+}
+
 // Check if we're in edit mode and load trip data
 async function checkForEditMode() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -514,7 +567,7 @@ function loadTripData(trip) {
                     photo: point.photo,
                     missionLink: point.missionLink,
                     hasLearningActivity: point.hasLearningActivity || false,
-                    learningActivityText: point.learningActivityText || ''
+                    learningTasks: point.learningTasks || []
                 },
                 marker: marker
             };
@@ -604,7 +657,7 @@ function exportTrip() {
             photo: p.data.photo,
             missionLink: p.data.missionLink,
             hasLearningActivity: p.data.hasLearningActivity,
-            learningActivityText: p.data.learningActivityText,
+            learningTasks: p.data.learningTasks || [],
             order: points.indexOf(p) + 1
         }));
 

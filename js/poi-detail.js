@@ -92,17 +92,24 @@ function displayPOIDetail() {
     // Display description
     document.getElementById('poi-detail-description').textContent = poi.description || 'لا يوجد وصف متاح';
 
-    // Display learning activity if available
+    // Display learning activities if available
     const learningActivitySection = document.getElementById('learning-activity-section');
     if (learningActivitySection) {
-        if (poi.hasLearningActivity) {
+        if (poi.hasLearningActivity && poi.learningTasks && poi.learningTasks.length > 0) {
+            const tasksHTML = poi.learningTasks.map((task, index) => `
+                <div style="display: flex; align-items: flex-start; gap: 12px; margin-top: ${index > 0 ? '12px' : '0'};">
+                    <span style="color: #007AFF; font-size: 14px; font-weight: 600; flex-shrink: 0;">${index + 1}.</span>
+                    <p style="margin: 0; color: #333; font-size: 14px; line-height: 1.6;">${task}</p>
+                </div>
+            `).join('');
+
             learningActivitySection.innerHTML = `
                 <div style="margin: 24px 0; padding: 24px; background: #f0f9ff; border-left: 6px solid #007AFF; border-radius: 12px;">
                     <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
                         <img src="assets/idea.svg" alt="نشاط تعليمي" style="width: 28px; height: 28px; filter: invert(0.2);">
-                        <strong style="color: #007AFF; font-size: 16px;">نشاط تعليمي</strong>
+                        <strong style="color: #007AFF; font-size: 16px;">${poi.learningTasks.length > 1 ? 'أنشطة تعليمية' : 'نشاط تعليمي'}</strong>
                     </div>
-                    <p style="margin: 0; color: #333; font-size: 14px; line-height: 1.6;">${poi.learningActivityText || 'هناك نشاط تعليمي في هذا المكان'}</p>
+                    ${tasksHTML}
                 </div>
             `;
             learningActivitySection.style.display = 'block';
