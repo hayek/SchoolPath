@@ -263,8 +263,8 @@ function displayPointsOfInterest() {
                             <div style="padding-right: 36px;">
                                 ${taskBody ? `<p style="margin: 0 0 8px 0; color: #333; font-size: 13px; line-height: 1.5; white-space: pre-wrap;">${taskBody}</p>` : ''}
                                 ${taskUrl ? `
-                                    <a href="${taskUrl}" target="_blank" style="display: inline-flex; align-items: center; gap: 4px; color: ${taskColor}; text-decoration: none; font-size: 13px; margin-bottom: 6px;" onclick="event.stopPropagation();">
-                                        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                                    <a href="${taskUrl}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; color: ${taskColor}; text-decoration: none; font-size: 14px; padding: 10px 14px; background: white; border: 2px solid ${taskColor}; border-radius: 8px; margin-bottom: 8px; font-weight: 500;" onclick="event.stopPropagation();">
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                                             <path d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/>
                                             <path d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/>
                                         </svg>
@@ -272,10 +272,10 @@ function displayPointsOfInterest() {
                                     </a>
                                 ` : ''}
                                 ${taskPdfs && taskPdfs.length > 0 ? `
-                                    <div style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px;">
+                                    <div style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 8px;">
                                         ${taskPdfs.map(pdf => `
-                                            <a href="${pdf}" target="_blank" style="display: inline-flex; align-items: center; gap: 4px; color: ${taskColor}; text-decoration: none; font-size: 12px; background: ${taskPdfBgColor}; padding: 4px 8px; border-radius: 4px;" onclick="event.stopPropagation();">
-                                                <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                                            <a href="${pdf}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; color: ${taskColor}; text-decoration: none; font-size: 13px; background: ${taskPdfBgColor}; padding: 10px 14px; border-radius: 8px; font-weight: 500;" onclick="event.stopPropagation();">
+                                                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
                                                     <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
                                                 </svg>
                                                 ${pdf.split('/').pop()}
