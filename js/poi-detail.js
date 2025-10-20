@@ -105,16 +105,16 @@ function displayPOIDetail() {
                 const taskColor = typeof task === 'object' ? (task.color || '#ff69b4') : '#ff69b4';
 
                 // Generate lighter background color (add alpha)
-                const taskBgColor = taskColor + '20'; // 20 = ~12% opacity
-                // Generate border color
-                const taskBorderColor = taskColor;
+                const taskBgColor = taskColor + '15'; // 15 = ~8% opacity
 
                 return `
-                    <div style="margin-top: ${index > 0 ? '20px' : '0'}; padding-top: ${index > 0 ? '20px' : '0'}; border-top: ${index > 0 ? `2px solid ${taskBorderColor}40` : 'none'};">
-                        <div style="display: flex; align-items: flex-start; gap: 12px;">
-                            <span style="color: ${taskColor}; font-size: 14px; font-weight: 600; flex-shrink: 0;">${index + 1}.</span>
-                            <div style="flex: 1;">
-                                <h4 style="margin: 0 0 8px 0; color: ${taskColor}; font-size: 16px;">${taskTitle}</h4>
+                    <div style="margin: ${index > 0 ? '16px' : '0'} 0 0 0; padding: 24px; background: ${taskBgColor}; border-left: 6px solid ${taskColor}; border-radius: 12px;">
+                        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: ${taskBody || taskUrl || (taskPdfs && taskPdfs.length > 0) ? '16px' : '0'};">
+                            <img src="assets/idea.svg" alt="نشاط تعليمي" style="width: 28px; height: 28px; filter: invert(0.2);">
+                            <h4 style="margin: 0; color: ${taskColor}; font-size: 16px;">${taskTitle}</h4>
+                        </div>
+                        ${taskBody || taskUrl || (taskPdfs && taskPdfs.length > 0) ? `
+                            <div style="padding-right: 44px;">
                                 ${taskBody ? `<p style="margin: 0 0 12px 0; color: #333; font-size: 14px; line-height: 1.6; white-space: pre-wrap;">${taskBody}</p>` : ''}
                                 ${taskUrl ? `
                                     <a href="${taskUrl}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; color: ${taskColor}; text-decoration: none; font-size: 14px; margin-bottom: 8px;">
@@ -140,24 +140,12 @@ function displayPOIDetail() {
                                     </div>
                                 ` : ''}
                             </div>
-                        </div>
+                        ` : ''}
                     </div>
                 `;
             }).join('');
 
-            // Use first task's color for the container, or default pink
-            const containerColor = poi.learningTasks[0] && typeof poi.learningTasks[0] === 'object' ? (poi.learningTasks[0].color || '#ff69b4') : '#ff69b4';
-            const containerBgColor = containerColor + '15'; // 15 = ~8% opacity
-
-            learningActivitySection.innerHTML = `
-                <div style="margin: 24px 0; padding: 24px; background: ${containerBgColor}; border-left: 6px solid ${containerColor}; border-radius: 12px;">
-                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
-                        <img src="assets/idea.svg" alt="نشاط تعليمي" style="width: 28px; height: 28px; filter: invert(0.2);">
-                        <strong style="color: ${containerColor}; font-size: 16px;">${poi.learningTasks.length > 1 ? 'أنشطة تعليمية' : 'نشاط تعليمي'}</strong>
-                    </div>
-                    ${tasksHTML}
-                </div>
-            `;
+            learningActivitySection.innerHTML = tasksHTML;
             learningActivitySection.style.display = 'block';
         } else {
             learningActivitySection.style.display = 'none';
