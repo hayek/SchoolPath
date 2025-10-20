@@ -36,7 +36,14 @@
       "photo": "images/clore.jpg",
       "missionLink": "",
       "hasLearningActivity": true,
-      "learningTasks": ["قراءة كتاب"],
+      "learningTasks": [
+        {
+          "title": "قراءة كتاب",
+          "body": "",
+          "url": "",
+          "pdfs": []
+        }
+      ],
       "order": 4
     }
   ],

@@ -79,7 +79,14 @@
       "photo": "images/luis.jpg",
       "missionLink": "",
       "hasLearningActivity": true,
-      "learningTasks": ["أَنَا أَتَعَلَّمُ"],
+      "learningTasks": [
+        {
+          "title": "أَنَا أَتَعَلَّمُ",
+          "body": "",
+          "url": "",
+          "pdfs": []
+        }
+      ],
       "order": 29
     }
   ],

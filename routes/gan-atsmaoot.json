@@ -36,7 +36,14 @@
       "photo": "images/zekaron.jpg",
       "missionLink": "",
       "hasLearningActivity": true,
-      "learningTasks": ["جمع الأوراق"],
+      "learningTasks": [
+        {
+          "title": "جمع الأوراق",
+          "body": "",
+          "url": "",
+          "pdfs": []
+        }
+      ],
       "order": 6
     },
     {
@@ -51,7 +58,14 @@
       "photo": "images/zekaron2.jpg",
       "missionLink": "",
       "hasLearningActivity": true,
-      "learningTasks": ["اللعب"],
+      "learningTasks": [
+        {
+          "title": "اللعب",
+          "body": "",
+          "url": "",
+          "pdfs": []
+        }
+      ],
       "order": 8
     }
   ],

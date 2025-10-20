@@ -434,8 +434,16 @@ document.getElementById('trip-color').addEventListener('change', () => {
 });
 
 // Learning tasks management functions
-function addLearningTaskField(value = '') {
-    currentLearningTasks.push(value);
+function addLearningTaskField(task = null) {
+    if (!task) {
+        task = {
+            title: '',
+            body: '',
+            url: '',
+            pdfs: []
+        };
+    }
+    currentLearningTasks.push(task);
     displayLearningTasks();
 }
 
@@ -444,8 +452,27 @@ function removeLearningTask(index) {
     displayLearningTasks();
 }
 
-function updateLearningTask(index, value) {
-    currentLearningTasks[index] = value;
+function updateLearningTaskField(index, field, value) {
+    if (!currentLearningTasks[index]) return;
+    currentLearningTasks[index][field] = value;
+}
+
+function addPdfToTask(index) {
+    const pdf = prompt('أدخل مسار ملف PDF (مثال: pdfs/activity1.pdf):');
+    if (pdf && pdf.trim()) {
+        if (!currentLearningTasks[index].pdfs) {
+            currentLearningTasks[index].pdfs = [];
+        }
+        currentLearningTasks[index].pdfs.push(pdf.trim());
+        displayLearningTasks();
+    }
+}
+
+function removePdfFromTask(taskIndex, pdfIndex) {
+    if (currentLearningTasks[taskIndex] && currentLearningTasks[taskIndex].pdfs) {
+        currentLearningTasks[taskIndex].pdfs.splice(pdfIndex, 1);
+        displayLearningTasks();
+    }
 }
 
 function displayLearningTasks() {
@@ -456,23 +483,84 @@ function displayLearningTasks() {
         return;
     }
 
-    container.innerHTML = currentLearningTasks.map((task, index) => `
-        <div style="display: flex; gap: 8px; align-items: center;">
-            <input
-                type="text"
-                value="${task}"
-                onchange="updateLearningTask(${index}, this.value)"
-                placeholder="نشاط تعليمي ${index + 1}"
-                style="flex: 1; padding: 8px; border: 1px solid var(--border); border-radius: 4px;"
-            >
-            <button
-                type="button"
-                onclick="removeLearningTask(${index})"
-                class="btn btn-danger btn-small"
-                style="flex-shrink: 0;"
-            >🗑️</button>
-        </div>
-    `).join('');
+    container.innerHTML = currentLearningTasks.map((task, index) => {
+        const taskTitle = typeof task === 'string' ? task : (task.title || '');
+        const taskBody = typeof task === 'object' ? (task.body || '') : '';
+        const taskUrl = typeof task === 'object' ? (task.url || '') : '';
+        const taskPdfs = typeof task === 'object' ? (task.pdfs || []) : [];
+
+        return `
+            <div style="border: 1px solid var(--border); border-radius: 8px; padding: 16px; background: var(--background);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <strong style="color: var(--primary);">نشاط ${index + 1}</strong>
+                    <button
+                        type="button"
+                        onclick="removeLearningTask(${index})"
+                        class="btn btn-danger btn-small"
+                    >🗑️ حذف</button>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div>
+                        <label style="display: block; margin-bottom: 4px; font-size: 13px; font-weight: 600;">العنوان (إجباري)</label>
+                        <input
+                            type="text"
+                            value="${taskTitle}"
+                            onchange="updateLearningTaskField(${index}, 'title', this.value)"
+                            placeholder="عنوان النشاط"
+                            required
+                            style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px;"
+                        >
+                    </div>
+
+                    <div>
+                        <label style="display: block; margin-bottom: 4px; font-size: 13px; font-weight: 600;">الوصف (اختياري)</label>
+                        <textarea
+                            onchange="updateLearningTaskField(${index}, 'body', this.value)"
+                            placeholder="وصف تفصيلي للنشاط"
+                            rows="3"
+                            style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; resize: vertical;"
+                        >${taskBody}</textarea>
+                    </div>
+
+                    <div>
+                        <label style="display: block; margin-bottom: 4px; font-size: 13px; font-weight: 600;">رابط URL (اختياري)</label>
+                        <input
+                            type="url"
+                            value="${taskUrl}"
+                            onchange="updateLearningTaskField(${index}, 'url', this.value)"
+                            placeholder="https://example.com"
+                            style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px;"
+                        >
+                    </div>
+
+                    <div>
+                        <label style="display: block; margin-bottom: 4px; font-size: 13px; font-weight: 600;">ملفات PDF (اختياري)</label>
+                        ${taskPdfs.length > 0 ? `
+                            <div style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px;">
+                                ${taskPdfs.map((pdf, pdfIndex) => `
+                                    <div style="display: flex; align-items: center; gap: 8px; padding: 6px; background: var(--surface); border-radius: 4px;">
+                                        <span style="flex: 1; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${pdf}</span>
+                                        <button
+                                            type="button"
+                                            onclick="removePdfFromTask(${index}, ${pdfIndex})"
+                                            class="btn btn-danger btn-small"
+                                            style="padding: 2px 8px; font-size: 12px;"
+                                        >✕</button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                        <button
+                            type="button"
+                            onclick="addPdfToTask(${index})"
+                            class="btn btn-secondary btn-small"
+                        >+ إضافة PDF</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
 }
 
 // Check if we're in edit mode and load trip data

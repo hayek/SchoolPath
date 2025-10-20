@@ -247,12 +247,15 @@ function displayPointsOfInterest() {
                     <img src="assets/idea.svg" alt="نشاط تعليمي" style="width: 28px; height: 28px; filter: invert(0.2);">
                     <strong style="color: #d946a6; font-size: 16px;">${poi.learningTasks.length > 1 ? 'أنشطة تعليمية' : 'نشاط تعليمي'}</strong>
                 </div>
-                ${poi.learningTasks.map((task, index) => `
-                    <div style="display: flex; align-items: flex-start; gap: 12px; margin-top: ${index > 0 ? '12px' : '0'};">
-                        <span style="color: #d946a6; font-size: 14px; font-weight: 600; flex-shrink: 0;">${index + 1}.</span>
-                        <p style="margin: 0; color: #7c2d54; font-size: 14px; line-height: 1.6;">${task}</p>
-                    </div>
-                `).join('')}
+                ${poi.learningTasks.map((task, index) => {
+                    const taskTitle = typeof task === 'string' ? task : task.title;
+                    return `
+                        <div style="display: flex; align-items: flex-start; gap: 12px; margin-top: ${index > 0 ? '12px' : '0'};">
+                            <span style="color: #d946a6; font-size: 14px; font-weight: 600; flex-shrink: 0;">${index + 1}.</span>
+                            <p style="margin: 0; color: #7c2d54; font-size: 14px; line-height: 1.6;">${taskTitle}</p>
+                        </div>
+                    `;
+                }).join('')}
             </div>
         ` : '';
 
