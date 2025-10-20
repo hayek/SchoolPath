@@ -249,10 +249,41 @@ function displayPointsOfInterest() {
                 </div>
                 ${poi.learningTasks.map((task, index) => {
                     const taskTitle = typeof task === 'string' ? task : task.title;
+                    const taskBody = typeof task === 'object' ? task.body : '';
+                    const taskUrl = typeof task === 'object' ? task.url : '';
+                    const taskUrlTitle = typeof task === 'object' ? (task.urlTitle || 'رابط النشاط') : 'رابط النشاط';
+                    const taskPdfs = typeof task === 'object' ? task.pdfs : [];
+
                     return `
-                        <div style="display: flex; align-items: flex-start; gap: 12px; margin-top: ${index > 0 ? '12px' : '0'};">
-                            <span style="color: #d946a6; font-size: 14px; font-weight: 600; flex-shrink: 0;">${index + 1}.</span>
-                            <p style="margin: 0; color: #7c2d54; font-size: 14px; line-height: 1.6;">${taskTitle}</p>
+                        <div style="margin-top: ${index > 0 ? '16px' : '0'}; padding-top: ${index > 0 ? '16px' : '0'}; border-top: ${index > 0 ? '1px dashed #ffb3d9' : 'none'};">
+                            <div style="display: flex; align-items: flex-start; gap: 12px;">
+                                <span style="color: #d946a6; font-size: 14px; font-weight: 600; flex-shrink: 0;">${index + 1}.</span>
+                                <div style="flex: 1;">
+                                    <p style="margin: 0 0 ${taskBody || taskUrl || (taskPdfs && taskPdfs.length > 0) ? '8px' : '0'}; color: #7c2d54; font-size: 14px; font-weight: 600; line-height: 1.6;">${taskTitle}</p>
+                                    ${taskBody ? `<p style="margin: 0 0 8px 0; color: #7c2d54; font-size: 13px; line-height: 1.5; white-space: pre-wrap;">${taskBody}</p>` : ''}
+                                    ${taskUrl ? `
+                                        <a href="${taskUrl}" target="_blank" style="display: inline-flex; align-items: center; gap: 4px; color: #d946a6; text-decoration: none; font-size: 13px; margin-bottom: 6px;" onclick="event.stopPropagation();">
+                                            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                                                <path d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/>
+                                                <path d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/>
+                                            </svg>
+                                            ${taskUrlTitle}
+                                        </a>
+                                    ` : ''}
+                                    ${taskPdfs && taskPdfs.length > 0 ? `
+                                        <div style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px;">
+                                            ${taskPdfs.map(pdf => `
+                                                <a href="${pdf}" target="_blank" style="display: inline-flex; align-items: center; gap: 4px; color: #d946a6; text-decoration: none; font-size: 12px; background: #ffd4e8; padding: 4px 8px; border-radius: 4px;" onclick="event.stopPropagation();">
+                                                    <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                                                        <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+                                                    </svg>
+                                                    ${pdf.split('/').pop()}
+                                                </a>
+                                            `).join('')}
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
                         </div>
                     `;
                 }).join('')}

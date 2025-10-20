@@ -440,6 +440,7 @@ function addLearningTaskField(task = null) {
             title: '',
             body: '',
             url: '',
+            urlTitle: '',
             pdfs: []
         };
     }
@@ -487,6 +488,7 @@ function displayLearningTasks() {
         const taskTitle = typeof task === 'string' ? task : (task.title || '');
         const taskBody = typeof task === 'object' ? (task.body || '') : '';
         const taskUrl = typeof task === 'object' ? (task.url || '') : '';
+        const taskUrlTitle = typeof task === 'object' ? (task.urlTitle || '') : '';
         const taskPdfs = typeof task === 'object' ? (task.pdfs || []) : [];
 
         return `
@@ -530,6 +532,17 @@ function displayLearningTasks() {
                             value="${taskUrl}"
                             onchange="updateLearningTaskField(${index}, 'url', this.value)"
                             placeholder="https://example.com"
+                            style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px;"
+                        >
+                    </div>
+
+                    <div>
+                        <label style="display: block; margin-bottom: 4px; font-size: 13px; font-weight: 600;">عنوان الرابط (اختياري)</label>
+                        <input
+                            type="text"
+                            value="${taskUrlTitle}"
+                            onchange="updateLearningTaskField(${index}, 'urlTitle', this.value)"
+                            placeholder="مثال: شاهد الفيديو، اقرأ المزيد"
                             style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px;"
                         >
                     </div>
