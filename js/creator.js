@@ -441,7 +441,8 @@ function addLearningTaskField(task = null) {
             body: '',
             url: '',
             urlTitle: '',
-            pdfs: []
+            pdfs: [],
+            color: '#ff69b4' // Default pink color
         };
     }
     currentLearningTasks.push(task);
@@ -492,11 +493,12 @@ function displayLearningTasks() {
         const taskUrl = typeof task === 'object' ? (task.url || '') : '';
         const taskUrlTitle = typeof task === 'object' ? (task.urlTitle || '') : '';
         const taskPdfs = typeof task === 'object' ? (task.pdfs || []) : [];
+        const taskColor = typeof task === 'object' ? (task.color || '#ff69b4') : '#ff69b4';
 
         return `
-            <div style="border: 1px solid var(--border); border-radius: 8px; padding: 16px; background: var(--background);">
+            <div style="border: 2px solid ${taskColor}; border-radius: 8px; padding: 16px; background: var(--background);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                    <strong style="color: var(--primary);">نشاط ${index + 1}</strong>
+                    <strong style="color: ${taskColor};">نشاط ${index + 1}</strong>
                     <button
                         type="button"
                         onclick="removeLearningTask(${index})"
@@ -547,6 +549,19 @@ function displayLearningTasks() {
                             placeholder="مثال: شاهد الفيديو، اقرأ المزيد"
                             style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px;"
                         >
+                    </div>
+
+                    <div>
+                        <label style="display: block; margin-bottom: 4px; font-size: 13px; font-weight: 600;">لون النشاط</label>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <input
+                                type="color"
+                                value="${taskColor}"
+                                onchange="updateLearningTaskField(${index}, 'color', this.value); displayLearningTasks();"
+                                style="width: 60px; height: 40px; padding: 2px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer;"
+                            >
+                            <span style="font-size: 13px; color: var(--text-secondary);">${taskColor}</span>
+                        </div>
                     </div>
 
                     <div>
