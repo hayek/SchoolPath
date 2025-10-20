@@ -6,6 +6,7 @@ let polyline = null;
 let points = []; // { type: 'poi' | 'secondary', coordinates, data, marker }
 let addMode = null; // 'poi' | 'secondary' | null
 let editingPointIndex = null;
+let currentLearningTasks = []; // Temporary array for learning tasks being edited
 
 // Initialize map when page loads
 document.addEventListener('DOMContentLoaded', async () => {
@@ -47,6 +48,11 @@ function setupEventListeners() {
 
     document.getElementById('cancel-poi-edit').addEventListener('click', () => {
         closePoiEditor();
+    });
+
+    // Learning tasks button
+    document.getElementById('add-learning-task-btn').addEventListener('click', () => {
+        addLearningTaskField();
     });
 
     // Export button
@@ -129,7 +135,7 @@ function addPoint(latlng, type) {
             photo: '',
             missionLink: '',
             hasLearningActivity: false,
-            learningActivityText: ''
+            learningTasks: []
         } : null,
         marker: marker
     };
@@ -163,7 +169,10 @@ function editPoint(index) {
     document.getElementById('poi-photo').value = photoValue;
     document.getElementById('poi-mission').value = point.data.missionLink || '';
     document.getElementById('poi-has-learning-activity').checked = point.data.hasLearningActivity || false;
-    document.getElementById('poi-learning-activity-text').value = point.data.learningActivityText || '';
+
+    // Load learning tasks
+    currentLearningTasks = point.data.learningTasks ? [...point.data.learningTasks] : [];
+    displayLearningTasks();
 
     document.getElementById('poi-editor').style.display = 'block';
     document.getElementById('poi-editor').scrollIntoView({ behavior: 'smooth' });
@@ -188,7 +197,7 @@ function savePOIEdit() {
         photo: photoValue,
         missionLink: document.getElementById('poi-mission').value,
         hasLearningActivity: document.getElementById('poi-has-learning-activity').checked,
-        learningActivityText: document.getElementById('poi-learning-activity-text').value
+        learningTasks: [...currentLearningTasks]
     };
 
     closePoiEditor();
@@ -198,8 +207,10 @@ function savePOIEdit() {
 // Close POI editor
 function closePoiEditor() {
     editingPointIndex = null;
+    currentLearningTasks = [];
     document.getElementById('poi-editor').style.display = 'none';
     document.getElementById('poi-form').reset();
+    displayLearningTasks();
 }
 
 // Delete a point
@@ -422,6 +433,166 @@ document.getElementById('trip-color').addEventListener('change', () => {
     updatePolyline();
 });
 
+// Learning tasks management functions
+function addLearningTaskField(task = null) {
+    if (!task) {
+        task = {
+            title: '',
+            body: '',
+            url: '',
+            urlTitle: '',
+            pdfs: [],
+            color: '#ff69b4' // Default pink color
+        };
+    }
+    currentLearningTasks.push(task);
+    displayLearningTasks();
+}
+
+function removeLearningTask(index) {
+    currentLearningTasks.splice(index, 1);
+    displayLearningTasks();
+}
+
+function updateLearningTaskField(index, field, value) {
+    if (!currentLearningTasks[index]) return;
+    currentLearningTasks[index][field] = value;
+}
+
+function addPdfToTask(index) {
+    const filename = prompt('أدخل اسم ملف PDF (مثال: activity1.pdf):');
+    if (filename && filename.trim()) {
+        if (!currentLearningTasks[index].pdfs) {
+            currentLearningTasks[index].pdfs = [];
+        }
+        // Automatically prepend "pdfs/" to the filename
+        const pdfPath = 'pdfs/' + filename.trim();
+        currentLearningTasks[index].pdfs.push(pdfPath);
+        displayLearningTasks();
+    }
+}
+
+function removePdfFromTask(taskIndex, pdfIndex) {
+    if (currentLearningTasks[taskIndex] && currentLearningTasks[taskIndex].pdfs) {
+        currentLearningTasks[taskIndex].pdfs.splice(pdfIndex, 1);
+        displayLearningTasks();
+    }
+}
+
+function displayLearningTasks() {
+    const container = document.getElementById('learning-tasks-list');
+
+    if (currentLearningTasks.length === 0) {
+        container.innerHTML = '<p style="font-size: 14px; color: var(--text-secondary);">لا توجد أنشطة تعليمية بعد</p>';
+        return;
+    }
+
+    container.innerHTML = currentLearningTasks.map((task, index) => {
+        const taskTitle = typeof task === 'string' ? task : (task.title || '');
+        const taskBody = typeof task === 'object' ? (task.body || '') : '';
+        const taskUrl = typeof task === 'object' ? (task.url || '') : '';
+        const taskUrlTitle = typeof task === 'object' ? (task.urlTitle || '') : '';
+        const taskPdfs = typeof task === 'object' ? (task.pdfs || []) : [];
+        const taskColor = typeof task === 'object' ? (task.color || '#ff69b4') : '#ff69b4';
+
+        return `
+            <div style="border: 2px solid ${taskColor}; border-radius: 8px; padding: 16px; background: var(--background);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <strong style="color: ${taskColor};">نشاط ${index + 1}</strong>
+                    <button
+                        type="button"
+                        onclick="removeLearningTask(${index})"
+                        class="btn btn-danger btn-small"
+                    >🗑️ حذف</button>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div>
+                        <label style="display: block; margin-bottom: 4px; font-size: 13px; font-weight: 600;">العنوان (إجباري)</label>
+                        <input
+                            type="text"
+                            value="${taskTitle}"
+                            onchange="updateLearningTaskField(${index}, 'title', this.value)"
+                            placeholder="عنوان النشاط"
+                            required
+                            style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px;"
+                        >
+                    </div>
+
+                    <div>
+                        <label style="display: block; margin-bottom: 4px; font-size: 13px; font-weight: 600;">الوصف (اختياري)</label>
+                        <textarea
+                            onchange="updateLearningTaskField(${index}, 'body', this.value)"
+                            placeholder="وصف تفصيلي للنشاط"
+                            rows="3"
+                            style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; resize: vertical;"
+                        >${taskBody}</textarea>
+                    </div>
+
+                    <div>
+                        <label style="display: block; margin-bottom: 4px; font-size: 13px; font-weight: 600;">رابط URL (اختياري)</label>
+                        <input
+                            type="url"
+                            value="${taskUrl}"
+                            onchange="updateLearningTaskField(${index}, 'url', this.value)"
+                            placeholder="https://example.com"
+                            style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px;"
+                        >
+                    </div>
+
+                    <div>
+                        <label style="display: block; margin-bottom: 4px; font-size: 13px; font-weight: 600;">عنوان الرابط (اختياري)</label>
+                        <input
+                            type="text"
+                            value="${taskUrlTitle}"
+                            onchange="updateLearningTaskField(${index}, 'urlTitle', this.value)"
+                            placeholder="مثال: شاهد الفيديو، اقرأ المزيد"
+                            style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px;"
+                        >
+                    </div>
+
+                    <div>
+                        <label style="display: block; margin-bottom: 4px; font-size: 13px; font-weight: 600;">لون النشاط</label>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <input
+                                type="color"
+                                value="${taskColor}"
+                                onchange="updateLearningTaskField(${index}, 'color', this.value); displayLearningTasks();"
+                                style="width: 60px; height: 40px; padding: 2px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer;"
+                            >
+                            <span style="font-size: 13px; color: var(--text-secondary);">${taskColor}</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label style="display: block; margin-bottom: 4px; font-size: 13px; font-weight: 600;">ملفات PDF (اختياري)</label>
+                        ${taskPdfs.length > 0 ? `
+                            <div style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px;">
+                                ${taskPdfs.map((pdf, pdfIndex) => `
+                                    <div style="display: flex; align-items: center; gap: 8px; padding: 6px; background: var(--surface); border-radius: 4px;">
+                                        <span style="flex: 1; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${pdf}</span>
+                                        <button
+                                            type="button"
+                                            onclick="removePdfFromTask(${index}, ${pdfIndex})"
+                                            class="btn btn-danger btn-small"
+                                            style="padding: 2px 8px; font-size: 12px;"
+                                        >✕</button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                        <button
+                            type="button"
+                            onclick="addPdfToTask(${index})"
+                            class="btn btn-secondary btn-small"
+                        >+ إضافة PDF</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
 // Check if we're in edit mode and load trip data
 async function checkForEditMode() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -514,7 +685,7 @@ function loadTripData(trip) {
                     photo: point.photo,
                     missionLink: point.missionLink,
                     hasLearningActivity: point.hasLearningActivity || false,
-                    learningActivityText: point.learningActivityText || ''
+                    learningTasks: point.learningTasks || []
                 },
                 marker: marker
             };
@@ -604,7 +775,7 @@ function exportTrip() {
             photo: p.data.photo,
             missionLink: p.data.missionLink,
             hasLearningActivity: p.data.hasLearningActivity,
-            learningActivityText: p.data.learningActivityText,
+            learningTasks: p.data.learningTasks || [],
             order: points.indexOf(p) + 1
         }));
 

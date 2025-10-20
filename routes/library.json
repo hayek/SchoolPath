@@ -21,7 +21,7 @@
       "photo": "",
       "missionLink": "",
       "hasLearningActivity": false,
-      "learningActivityText": "",
+      "learningTasks": [],
       "order": 1
     },
     {
@@ -36,7 +36,16 @@
       "photo": "images/clore.jpg",
       "missionLink": "",
       "hasLearningActivity": true,
-      "learningActivityText": "قراءة كتاب",
+      "learningTasks": [
+        {
+          "title": "قراءة كتاب",
+          "body": "",
+          "url": "",
+          "urlTitle": "",
+          "pdfs": [],
+          "color": "#ff69b4"
+        }
+      ],
       "order": 4
     }
   ],

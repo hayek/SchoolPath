@@ -241,15 +241,53 @@ function displayPointsOfInterest() {
             </div>
         ` : '';
 
-        const learningActivityBox = poi.hasLearningActivity ? `
-            <div style="padding: 24px; background: #ffe8f0; border-left: 6px solid #ff69b4; border-radius: var(--radius-md); display: flex; flex-direction: column; margin-top: var(--spacing-md);">
-                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
-                    <img src="assets/idea.svg" alt="نشاط تعليمي" style="width: 28px; height: 28px; filter: invert(0.2);">
-                    <strong style="color: #d946a6; font-size: 16px;">نشاط تعليمي</strong>
-                </div>
-                <p style="margin: 0; color: #7c2d54; font-size: 14px; line-height: 1.6;">${poi.learningActivityText || 'هناك نشاط تعليمي في هذا المكان'}</p>
-            </div>
-        ` : '';
+        const learningActivityBox = poi.hasLearningActivity && poi.learningTasks && poi.learningTasks.length > 0 ?
+            poi.learningTasks.map((task, index) => {
+                const taskTitle = typeof task === 'string' ? task : task.title;
+                const taskBody = typeof task === 'object' ? task.body : '';
+                const taskUrl = typeof task === 'object' ? task.url : '';
+                const taskUrlTitle = typeof task === 'object' ? (task.urlTitle || 'رابط النشاط') : 'رابط النشاط';
+                const taskPdfs = typeof task === 'object' ? task.pdfs : [];
+                const taskColor = typeof task === 'object' ? (task.color || '#ff69b4') : '#ff69b4';
+
+                const taskBgColor = taskColor + '20'; // 20 = ~12% opacity
+                const taskPdfBgColor = taskColor + '30'; // 30 = ~19% opacity
+
+                return `
+                    <div style="padding: 20px; background: ${taskBgColor}; border-left: 6px solid ${taskColor}; border-radius: var(--radius-md); margin-top: var(--spacing-md);">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: ${taskBody || taskUrl || (taskPdfs && taskPdfs.length > 0) ? '12px' : '0'};">
+                            <img src="assets/idea.svg" alt="نشاط تعليمي" style="width: 24px; height: 24px; filter: invert(0.2);">
+                            <strong style="color: ${taskColor}; font-size: 15px;">${taskTitle}</strong>
+                        </div>
+                        ${taskBody || taskUrl || (taskPdfs && taskPdfs.length > 0) ? `
+                            <div style="padding-right: 36px;">
+                                ${taskBody ? `<p style="margin: 0 0 8px 0; color: #333; font-size: 13px; line-height: 1.5; white-space: pre-wrap;">${taskBody}</p>` : ''}
+                                ${taskUrl ? `
+                                    <a href="${taskUrl}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; color: ${taskColor}; text-decoration: none; font-size: 14px; padding: 10px 14px; background: white; border: 2px solid ${taskColor}; border-radius: 8px; margin-bottom: 8px; font-weight: 500;" onclick="event.stopPropagation();">
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                            <path d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/>
+                                            <path d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/>
+                                        </svg>
+                                        ${taskUrlTitle}
+                                    </a>
+                                ` : ''}
+                                ${taskPdfs && taskPdfs.length > 0 ? `
+                                    <div style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 8px;">
+                                        ${taskPdfs.map(pdf => `
+                                            <a href="${pdf}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; color: ${taskColor}; text-decoration: none; font-size: 13px; background: ${taskPdfBgColor}; padding: 10px 14px; border-radius: 8px; font-weight: 500;" onclick="event.stopPropagation();">
+                                                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                                                    <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+                                                </svg>
+                                                ${pdf.split('/').pop()}
+                                            </a>
+                                        `).join('')}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('') : '';
 
         const poiCard = `
             <div class="poi-card" style="display: flex; flex-direction: column; gap: var(--spacing-md); cursor: pointer;">

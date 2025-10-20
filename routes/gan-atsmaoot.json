@@ -21,7 +21,7 @@
       "photo": "",
       "missionLink": "",
       "hasLearningActivity": false,
-      "learningActivityText": "",
+      "learningTasks": [],
       "order": 1
     },
     {
@@ -36,7 +36,16 @@
       "photo": "images/zekaron.jpg",
       "missionLink": "",
       "hasLearningActivity": true,
-      "learningActivityText": "جمع الأوراق",
+      "learningTasks": [
+        {
+          "title": "جمع الأوراق",
+          "body": "",
+          "url": "",
+          "urlTitle": "",
+          "pdfs": [],
+          "color": "#ff69b4"
+        }
+      ],
       "order": 6
     },
     {
@@ -51,7 +60,16 @@
       "photo": "images/zekaron2.jpg",
       "missionLink": "",
       "hasLearningActivity": true,
-      "learningActivityText": "اللعب",
+      "learningTasks": [
+        {
+          "title": "اللعب",
+          "body": "",
+          "url": "",
+          "urlTitle": "",
+          "pdfs": [],
+          "color": "#ff69b4"
+        }
+      ],
       "order": 8
     }
   ],

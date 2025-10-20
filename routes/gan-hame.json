@@ -23,7 +23,7 @@
       "photo": "",
       "missionLink": "",
       "hasLearningActivity": false,
-      "learningActivityText": "",
+      "learningTasks": [],
       "order": 1
     },
     {
@@ -38,7 +38,16 @@
       "photo": "images/carmilit.jpg",
       "missionLink": "",
       "hasLearningActivity": true,
-      "learningActivityText": "استكشاف النافورة",
+      "learningTasks": [
+        {
+          "title": "استكشاف النافورة",
+          "body": "",
+          "url": "",
+          "urlTitle": "",
+          "pdfs": [],
+          "color": "#ff69b4"
+        }
+      ],
       "order": 5
     },
     {
@@ -53,7 +62,16 @@
       "photo": "images/ganHaem.jpg",
       "missionLink": "",
       "hasLearningActivity": true,
-      "learningActivityText": "جمع الأوراق",
+      "learningTasks": [
+        {
+          "title": "جمع الأوراق",
+          "body": "",
+          "url": "",
+          "urlTitle": "",
+          "pdfs": [],
+          "color": "#ff69b4"
+        }
+      ],
       "order": 14
     },
     {
@@ -68,7 +86,16 @@
       "photo": "images/zooMap.jpg",
       "missionLink": "",
       "hasLearningActivity": true,
-      "learningActivityText": "تحديد الحيوانات",
+      "learningTasks": [
+        {
+          "title": "تحديد الحيوانات",
+          "body": "",
+          "url": "",
+          "urlTitle": "",
+          "pdfs": [],
+          "color": "#ff69b4"
+        }
+      ],
       "order": 16
     }
   ],
