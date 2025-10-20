@@ -459,12 +459,14 @@ function updateLearningTaskField(index, field, value) {
 }
 
 function addPdfToTask(index) {
-    const pdf = prompt('أدخل مسار ملف PDF (مثال: pdfs/activity1.pdf):');
-    if (pdf && pdf.trim()) {
+    const filename = prompt('أدخل اسم ملف PDF (مثال: activity1.pdf):');
+    if (filename && filename.trim()) {
         if (!currentLearningTasks[index].pdfs) {
             currentLearningTasks[index].pdfs = [];
         }
-        currentLearningTasks[index].pdfs.push(pdf.trim());
+        // Automatically prepend "pdfs/" to the filename
+        const pdfPath = 'pdfs/' + filename.trim();
+        currentLearningTasks[index].pdfs.push(pdfPath);
         displayLearningTasks();
     }
 }
