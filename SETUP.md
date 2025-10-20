@@ -1,8 +1,8 @@
-# PathSchool - Setup & Development Guide
+# NaviGo - Setup & Development Guide
 
 ## Project Overview
 
-PathSchool is a mobile-first web application for creating and sharing educational walking tours in Haifa, Israel. It's designed for students in grades 1-8 and allows teachers to create custom routes with points of interest, missions, and integrated Google Maps navigation.
+NaviGo is a mobile-first web application for creating and sharing educational walking tours in Haifa, Israel. It's designed for students in grades 1-8 and allows teachers to create custom routes with points of interest, missions, and integrated Google Maps navigation.
 
 ## Tech Stack
 
@@ -15,7 +15,7 @@ PathSchool is a mobile-first web application for creating and sharing educationa
 ## Project Structure
 
 ```
-PathSchool/
+NaviGo/
 ├── index.html              # Main page - shows all trips
 ├── trip.html              # Individual trip page
 ├── creator.html           # Trip creation tool
@@ -56,7 +56,7 @@ PathSchool/
 1. Clone the repository:
    ```bash
    git clone <repository-url>
-   cd PathSchool
+   cd NaviGo
    ```
 
 2. Update `config.js` with your API key:

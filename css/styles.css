@@ -1,4 +1,4 @@
-/* PathSchool - Modern Minimalist Apple-Style Design */
+/* NaviGo - Modern Minimalist Apple-Style Design */
 
 /* Reset and Base Styles */
 * {
@@ -254,6 +254,63 @@ header {
     align-items: stretch;
     min-height: 120px;
     width: 100%;
+    flex-wrap: wrap;
+}
+
+.trip-collage {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    flex: 0 0 120px;
+    width: 120px;
+    height: 120px;
+    order: -1;
+    margin-left: auto;
+}
+
+/* Different grid layouts for different numbers of images */
+.trip-collage-1 {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+}
+
+.trip-collage-1 .collage-image {
+    width: 100%;
+    height: 100%;
+}
+
+.trip-collage-2,
+.trip-collage-3,
+.trip-collage-4 {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+}
+
+.collage-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    aspect-ratio: 1 / 1;
+    display: block;
+}
+
+.collage-image:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+}
+
+.collage-image:active {
+    transform: scale(0.98);
+}
+
+.collage-empty {
+    background: transparent;
+    border-radius: 6px;
+    width: 100%;
+    height: 100%;
 }
 
 .trip-color-indicator {
@@ -312,6 +369,10 @@ header {
     width: calc(100% + 2 * var(--spacing-md));
     margin-left: calc(-1 * var(--spacing-md));
     margin-right: calc(-1 * var(--spacing-md));
+}
+
+.poi-list .poi-card {
+    margin-top: var(--spacing-lg);
 }
 
 .poi-card {
@@ -646,7 +707,7 @@ textarea {
     }
 
     .poi-card {
-        flex-direction: row;
+        flex-direction: row-reverse;
         gap: var(--spacing-lg);
     }
 
@@ -672,6 +733,29 @@ textarea {
     position: sticky;
     top: 0;
     z-index: 1000;
+}
+
+/* Learning Activity Badge */
+.learning-activity-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 18px;
+    padding: 16px 12px;
+    width: 100%;
+    color: #333;
+    font-weight: bold;
+    background: #f0f9ff;
+    border-left: 4px solid #007AFF;
+    border-radius: 8px;
+    margin-top: 12px;
+}
+
+.learning-activity-badge img {
+    width: 28px;
+    height: 28px;
+    filter: invert(0.2);
+    flex-shrink: 0;
 }
 
 /* Utility Classes */

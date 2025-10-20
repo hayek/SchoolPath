@@ -116,31 +116,28 @@ async function displayTripOnMap() {
             index + 1
         );
 
-        // Add popup with only title
+        // Add popup with title and image
         const popup = L.popup({
             closeButton: true,
             autoClose: false,
             closeOnClick: false
         }).setContent(`
             <div style="padding: 8px; cursor: pointer;" class="poi-popup" data-poi-id="${poi.id}">
-                <h3 style="margin: 0; font-size: 16px;">${poi.name}</h3>
+                ${poi.photo ? `<img src="${poi.photo}" alt="${poi.title}" style="width: 200px; height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 8px; display: block;">` : ''}
+                <h3 style="margin: 0; font-size: 16px;">${poi.title}</h3>
+                ${poi.subtitle ? `<p style="margin: 4px 0 0 0; font-size: 14px; color: #666;">${poi.subtitle}</p>` : ''}
             </div>
         `);
 
         marker.bindPopup(popup);
         marker.addTo(map);
 
-        // Click handler on popup to scroll to POI in list
+        // Click handler on popup to navigate to POI detail page
         marker.on('popupopen', () => {
             const popupElement = document.querySelector(`.poi-popup[data-poi-id="${poi.id}"]`);
             if (popupElement) {
                 popupElement.addEventListener('click', () => {
-                    const poiElement = document.getElementById(`poi-${poi.id}`);
-                    if (poiElement) {
-                        poiElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        // Close the popup after scrolling
-                        map.closePopup();
-                    }
+                    navigateToPOI(trip.id, poi.id);
                 });
             }
         });
@@ -223,74 +220,73 @@ function displayPointsOfInterest() {
     // Sort POIs by order
     const sortedPOIs = [...trip.pointsOfInterest].sort((a, b) => a.order - b.order);
 
-    poiList.innerHTML = sortedPOIs.map((poi, index) => `
-        <div class="poi-card" id="poi-${poi.id}">
-            ${poi.photo ? `<img src="${poi.photo}" alt="${poi.name}" class="poi-image" onclick="openImageFullscreen('${poi.photo}')">` : ''}
-            <div style="flex: 1;">
-                <div class="poi-header">
-                    <div>
-                        <div class="flex items-center gap-sm mb-sm">
-                            <div class="poi-number">${index + 1}</div>
-                            <h3 style="margin: 0;">${poi.name}</h3>
-                        </div>
-                        <div class="poi-description-container">
-                            <p class="poi-description collapsed" id="poi-desc-${poi.id}">${poi.description}</p>
-                            <button class="poi-description-toggle" id="poi-toggle-${poi.id}" onclick="toggleDescription('${poi.id}')">اقرأ المزيد</button>
+    poiList.innerHTML = sortedPOIs.map((poi, index) => {
+        // Get first line of description (truncate at first newline or after 100 characters)
+        const getFirstLine = (text) => {
+            if (!text) return '';
+            const firstLine = text.split('\n')[0];
+            if (firstLine.length > 100) {
+                return firstLine.substring(0, 100) + '...';
+            }
+            return firstLine + '...';
+        };
+
+        const descriptionBox = poi.description ? `
+            <div style="padding: 24px; background: #f0f7ff; border-left: 6px solid #007AFF; border-radius: var(--radius-md); cursor: pointer; display: flex; flex-direction: column; gap: 12px; margin-top: var(--spacing-md);" onclick="navigateToPOI('${trip.id}', '${poi.id}', event)">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <img src="assets/Read.svg" alt="وصف" style="width: 28px; height: 28px; filter: invert(0.2); flex-shrink: 0;">
+                    <strong style="color: #007AFF; font-size: 16px;">اقرأ المزيد</strong>
+                </div>
+                <p style="margin: 0; color: #333; font-size: 14px; line-height: 1.6;">${getFirstLine(poi.description)}</p>
+            </div>
+        ` : '';
+
+        const learningActivityBox = poi.hasLearningActivity ? `
+            <div style="padding: 24px; background: #ffe8f0; border-left: 6px solid #ff69b4; border-radius: var(--radius-md); display: flex; flex-direction: column; margin-top: var(--spacing-md);">
+                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+                    <img src="assets/idea.svg" alt="نشاط تعليمي" style="width: 28px; height: 28px; filter: invert(0.2);">
+                    <strong style="color: #d946a6; font-size: 16px;">نشاط تعليمي</strong>
+                </div>
+                <p style="margin: 0; color: #7c2d54; font-size: 14px; line-height: 1.6;">${poi.learningActivityText || 'هناك نشاط تعليمي في هذا المكان'}</p>
+            </div>
+        ` : '';
+
+        const poiCard = `
+            <div class="poi-card" style="display: flex; flex-direction: column; gap: var(--spacing-md); cursor: pointer;">
+                <div style="display: flex; flex-direction: row-reverse; gap: var(--spacing-md);" onclick="navigateToPOI('${trip.id}', '${poi.id}', event)">
+                    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: var(--spacing-sm);">
+                        ${poi.photo ? `<img src="${poi.photo}" alt="${poi.title}" class="poi-image" onclick="openImageFullscreen('${poi.photo}', event)" style="width: 120px; height: 120px; object-fit: cover; border-radius: var(--radius-md); flex-shrink: 0;">` : ''}
+                    </div>
+                    <div style="flex: 1; display: flex; flex-direction: column;">
+                        <div style="display: flex; align-items: flex-start; gap: var(--spacing-sm);">
+                            <div class="poi-number" style="flex-shrink: 0;">${index + 1}</div>
+                            <div style="flex: 1;">
+                                <h3 style="margin: 0;">${poi.title}</h3>
+                                ${poi.subtitle ? `<p style="margin: 4px 0 0 0; font-size: 14px; color: #666;">${poi.subtitle}</p>` : ''}
+                            </div>
                         </div>
                     </div>
                 </div>
-                ${poi.missionLink ? `
-                    <a href="${poi.missionLink}" target="_blank" class="btn btn-secondary mt-sm">
-                        📝 انتقل إلى المهمة
-                    </a>
-                ` : ''}
+                ${descriptionBox}
+                ${learningActivityBox}
             </div>
-        </div>
-    `).join('');
+        `;
 
-    // Check each description and hide toggle button if not needed
-    setTimeout(() => {
-        sortedPOIs.forEach(poi => {
-            const descElement = document.getElementById(`poi-desc-${poi.id}`);
-            const toggleBtn = document.getElementById(`poi-toggle-${poi.id}`);
+        return poiCard;
+    }).join('');
 
-            // Check if description is actually longer than 5 lines
-            if (descElement && toggleBtn) {
-                // Get the collapsed height
-                const collapsedHeight = descElement.clientHeight;
-
-                // Temporarily expand to check actual height
-                descElement.classList.remove('collapsed');
-                const fullHeight = descElement.scrollHeight;
-                descElement.classList.add('collapsed');
-
-                // If content fits in 5 lines (with small tolerance), hide the toggle button
-                if (fullHeight <= collapsedHeight + 5) {
-                    toggleBtn.style.display = 'none';
-                }
-            }
-        });
-    }, 100);
 }
 
-// Toggle POI description expand/collapse
-function toggleDescription(poiId) {
-    const descElement = document.getElementById(`poi-desc-${poiId}`);
-    const toggleBtn = document.getElementById(`poi-toggle-${poiId}`);
-
-    if (descElement && toggleBtn) {
-        if (descElement.classList.contains('collapsed')) {
-            descElement.classList.remove('collapsed');
-            toggleBtn.textContent = 'إخفاء';
-        } else {
-            descElement.classList.add('collapsed');
-            toggleBtn.textContent = 'اقرأ المزيد';
-        }
-    }
+// Navigate to POI detail page
+function navigateToPOI(tripId, poiId, event) {
+    window.location.href = `poi-detail.html?trip=${tripId}&poi=${poiId}`;
 }
 
 // Open image in fullscreen
-function openImageFullscreen(imageSrc) {
+function openImageFullscreen(imageSrc, event) {
+    // Prevent card click event from firing
+    event.stopPropagation();
+
     const fullscreenOverlay = document.createElement('div');
     fullscreenOverlay.className = 'image-fullscreen-overlay';
     fullscreenOverlay.innerHTML = `

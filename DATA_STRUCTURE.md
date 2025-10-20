@@ -1,4 +1,4 @@
-# PathSchool Data Structure
+# NaviGo Data Structure
 
 ## Trip JSON Format
 
@@ -16,7 +16,8 @@ Each trip is stored as a JSON file in the `routes/` folder. The filename should 
   "pointsOfInterest": [
     {
       "id": "poi-1",
-      "name": "Point of Interest Name",
+      "title": "Point of Interest Name",
+      "subtitle": "Brief subtitle or category",
       "description": "Detailed description of the location",
       "coordinates": {
         "lat": 32.7940,
@@ -50,8 +51,9 @@ Each trip is stored as a JSON file in the `routes/` folder. The filename should 
 - **grades**: Array of grade numbers this trip is suitable for
 - **pointsOfInterest**: Array of main POIs
   - **id**: Unique identifier for the POI
-  - **name**: Display name
-  - **description**: Educational content about the location
+  - **title**: Display name
+  - **subtitle**: Brief subtitle or category for the POI
+  - **description**: Educational content about the location (optional)
   - **coordinates**: GPS coordinates (Haifa, Israel)
   - **photo**: Path to the photo file (relative to project root)
   - **missionLink**: External URL with interactive mission/activity

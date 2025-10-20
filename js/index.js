@@ -173,27 +173,40 @@ function displayTripsList() {
         return;
     }
 
-    tripsList.innerHTML = trips.map(trip => `
-        <div class="card card-clickable trip-card" onclick="location.href='trip.html?id=${trip.id}'">
-            <div class="trip-color-indicator" style="background-color: ${trip.color}"></div>
-            <div class="trip-info">
-                <div class="trip-header">
-                    <div class="trip-header-content">
-                        <h3>${trip.title}</h3>
-                        <p>${trip.description}</p>
-                        <div class="trip-meta">
-                            <span class="trip-grades">
-                                ${trip.grades.map(grade => `<span class="grade-badge">الصف ${grade}</span>`).join('')}
-                            </span>
+    tripsList.innerHTML = trips.map(trip => {
+        // Extract up to 4 images from points of interest
+        const images = trip.pointsOfInterest
+            .filter(poi => poi.photo && poi.photo.trim() !== '')
+            .map(poi => poi.photo)
+            .slice(0, 4);
+
+        return `
+            <div class="card card-clickable trip-card" onclick="location.href='trip.html?id=${trip.id}'">
+                <div class="trip-color-indicator" style="background-color: ${trip.color}"></div>
+                <div class="trip-info">
+                    <div class="trip-header">
+                        <div class="trip-header-content">
+                            <h3>${trip.title}</h3>
+                            <p>${trip.description}</p>
                         </div>
+                        <button class="copy-btn" onclick="event.stopPropagation(); copyTripUrl('${trip.id}', this)" title="نسخ رابط الرحلة">
+                            <img src="assets/copy.svg" alt="نسخ">
+                        </button>
                     </div>
-                    <button class="copy-btn" onclick="event.stopPropagation(); copyTripUrl('${trip.id}', this)" title="نسخ رابط الرحلة">
-                        <img src="assets/copy.svg" alt="نسخ">
-                    </button>
                 </div>
+                ${images.length > 0 ? `
+                    <div class="trip-collage trip-collage-${images.length}">
+                        ${images.map((img, idx) => `
+                            <img src="${img}" alt="Trip image ${idx + 1}" class="collage-image" onclick="event.stopPropagation()">
+                        `).join('')}
+                        ${images.length === 1 ? '' : Array(Math.max(0, 4 - images.length)).fill(0).map((_, idx) => `
+                            <div class="collage-empty"></div>
+                        `).join('')}
+                    </div>
+                ` : ''}
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 // Copy trip URL to clipboard

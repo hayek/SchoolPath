@@ -1,4 +1,4 @@
-# Deploy PathSchool to GitHub Pages
+# Deploy NaviGo to GitHub Pages
 
 ## Your site IS already static and ready for GitHub Pages! ✅
 
@@ -11,16 +11,16 @@ The CORS error only happens with `file://` - it will work perfectly once hosted.
 ### 1. Initialize Git Repository
 
 ```bash
-cd /Users/ahayek/Developer/PathSchool
+cd /Users/ahayek/Developer/NaviGo
 git init
 git add .
-git commit -m "Initial commit: PathSchool with Geoapify + Leaflet in Arabic"
+git commit -m "Initial commit: NaviGo with Geoapify + Leaflet in Arabic"
 ```
 
 ### 2. Create GitHub Repository
 
 1. Go to https://github.com/new
-2. Repository name: `PathSchool` (or any name you like)
+2. Repository name: `NaviGo` (or any name you like)
 3. **DO NOT** initialize with README, .gitignore, or license (we already have files)
 4. Click "Create repository"
 
@@ -29,7 +29,7 @@ git commit -m "Initial commit: PathSchool with Geoapify + Leaflet in Arabic"
 ```bash
 # Replace YOUR_USERNAME with your actual GitHub username
 git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/PathSchool.git
+git remote add origin https://github.com/YOUR_USERNAME/NaviGo.git
 git push -u origin main
 ```
 
@@ -44,7 +44,7 @@ git push -u origin main
 
 Your site will be live at:
 ```
-https://YOUR_USERNAME.github.io/PathSchool/
+https://YOUR_USERNAME.github.io/NaviGo/
 ```
 
 It takes 1-2 minutes for GitHub to build and deploy.
@@ -84,7 +84,7 @@ If you have your own domain:
 
 1. Download GitHub Desktop: https://desktop.github.com/
 2. Open it and sign in
-3. File → Add Local Repository → Choose PathSchool folder
+3. File → Add Local Repository → Choose NaviGo folder
 4. Click "Publish repository"
 5. Go to repository Settings → Pages → Enable
 

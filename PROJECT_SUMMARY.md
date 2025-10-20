@@ -1,8 +1,8 @@
-# PathSchool - Project Summary
+# NaviGo - Project Summary
 
 ## Overview
 
-PathSchool is a complete mobile-first web application for creating and managing educational walking tours in Haifa, Israel. The system is designed for elementary and middle school students (grades 1-8) and provides an intuitive interface for teachers to create custom routes with educational content.
+NaviGo is a complete mobile-first web application for creating and managing educational walking tours in Haifa, Israel. The system is designed for elementary and middle school students (grades 1-8) and provides an intuitive interface for teachers to create custom routes with educational content.
 
 ## What Has Been Built
 
@@ -82,7 +82,7 @@ PathSchool is a complete mobile-first web application for creating and managing 
 ### 📁 File Structure
 
 ```
-PathSchool/
+NaviGo/
 ├── HTML Pages (3)
 │   ├── index.html           # Main page
 │   ├── trip.html            # Trip detail page

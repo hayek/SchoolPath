@@ -1,4 +1,4 @@
-# How to Run PathSchool Locally
+# How to Run NaviGo Locally
 
 ## The Problem
 Opening `index.html` directly (file://) causes CORS errors - the browser blocks JavaScript from loading JSON files.
@@ -10,7 +10,7 @@ Run a local web server! Choose one of these options:
 
 ## Option 1: Python (Easiest - Already Installed on Mac)
 
-Open Terminal in the PathSchool folder and run:
+Open Terminal in the NaviGo folder and run:
 
 ```bash
 # Python 3 (recommended)

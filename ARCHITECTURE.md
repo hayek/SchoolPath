@@ -1,10 +1,10 @@
-# PathSchool - System Architecture
+# NaviGo - System Architecture
 
 ## System Flow Diagram
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        PathSchool System                         │
+│                        NaviGo System                             │
 └─────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────┐         ┌──────────────────┐         ┌──────────────────┐

@@ -123,10 +123,13 @@ function addPoint(latlng, type) {
         type: type,
         coordinates: coordinates,
         data: type === 'poi' ? {
-            name: '',
+            title: '',
+            subtitle: '',
             description: '',
             photo: '',
-            missionLink: ''
+            missionLink: '',
+            hasLearningActivity: false,
+            learningActivityText: ''
         } : null,
         marker: marker
     };
@@ -148,10 +151,19 @@ function editPoint(index) {
     editingPointIndex = index;
     const point = points[index];
 
-    document.getElementById('poi-name').value = point.data.name || '';
+    // Strip 'images/' prefix from photo path for display
+    let photoValue = point.data.photo || '';
+    if (photoValue.startsWith('images/')) {
+        photoValue = photoValue.substring(7); // Remove 'images/'
+    }
+
+    document.getElementById('poi-title').value = point.data.title || '';
+    document.getElementById('poi-subtitle').value = point.data.subtitle || '';
     document.getElementById('poi-description').value = point.data.description || '';
-    document.getElementById('poi-photo').value = point.data.photo || '';
+    document.getElementById('poi-photo').value = photoValue;
     document.getElementById('poi-mission').value = point.data.missionLink || '';
+    document.getElementById('poi-has-learning-activity').checked = point.data.hasLearningActivity || false;
+    document.getElementById('poi-learning-activity-text').value = point.data.learningActivityText || '';
 
     document.getElementById('poi-editor').style.display = 'block';
     document.getElementById('poi-editor').scrollIntoView({ behavior: 'smooth' });
@@ -162,11 +174,21 @@ function savePOIEdit() {
     if (editingPointIndex === null) return;
 
     const point = points[editingPointIndex];
+    let photoValue = document.getElementById('poi-photo').value.trim();
+
+    // Add 'images/' prefix if not already present
+    if (photoValue && !photoValue.startsWith('images/')) {
+        photoValue = 'images/' + photoValue;
+    }
+
     point.data = {
-        name: document.getElementById('poi-name').value,
+        title: document.getElementById('poi-title').value,
+        subtitle: document.getElementById('poi-subtitle').value,
         description: document.getElementById('poi-description').value,
-        photo: document.getElementById('poi-photo').value,
-        missionLink: document.getElementById('poi-mission').value
+        photo: photoValue,
+        missionLink: document.getElementById('poi-mission').value,
+        hasLearningActivity: document.getElementById('poi-has-learning-activity').checked,
+        learningActivityText: document.getElementById('poi-learning-activity-text').value
     };
 
     closePoiEditor();
@@ -324,23 +346,57 @@ function updatePointsList() {
         return;
     }
 
-    pointsList.innerHTML = points.map((point, index) => `
-        <div class="point-item" draggable="true" data-index="${index}">
-            <div class="flex items-center gap-sm" style="flex: 1;">
-                <span class="drag-handle" style="cursor: grab;">☰</span>
-                <span style="font-weight: 600; color: var(--text-secondary);">${index + 1}</span>
-                <span>
-                    ${point.type === 'poi' ?
-                        `📍 ${point.data.name || 'نقطة اهتمام بدون اسم'}` :
-                        '• نقطة توجيه'}
-                </span>
+    const tripColor = document.getElementById('trip-color').value;
+    let poiCount = 1; // Counter for POI numbers only
+
+    pointsList.innerHTML = points.map((point, index) => {
+        let displayNumber = '';
+        let displayIcon = '';
+
+        if (point.type === 'poi') {
+            // Create a numbered circle with trip color for POIs
+            displayNumber = poiCount;
+            displayIcon = `
+                <div style="
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 50%;
+                    background-color: ${tripColor};
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: 700;
+                    color: white;
+                    font-size: 14px;
+                    flex-shrink: 0;
+                ">
+                    ${displayNumber}
+                </div>
+            `;
+            poiCount++;
+        } else {
+            // For secondary points, show the sequential number
+            displayIcon = `<span style="font-weight: 600; color: var(--text-secondary);">${index + 1}</span>`;
+        }
+
+        return `
+            <div class="point-item" draggable="true" data-index="${index}">
+                <div class="flex items-center gap-sm" style="flex: 1;">
+                    <span class="drag-handle" style="cursor: grab;">☰</span>
+                    ${displayIcon}
+                    <span>
+                        ${point.type === 'poi' ?
+                            `${point.data.title || 'نقطة اهتمام بدون اسم'}` :
+                            'نقطة توجيه'}
+                    </span>
+                </div>
+                <div class="flex gap-sm">
+                    ${point.type === 'poi' ? `<button onclick="editPoint(${index})" class="btn btn-secondary btn-small">✏️</button>` : ''}
+                    <button onclick="deletePoint(${index})" class="btn btn-danger btn-small">🗑️</button>
+                </div>
             </div>
-            <div class="flex gap-sm">
-                ${point.type === 'poi' ? `<button onclick="editPoint(${index})" class="btn btn-secondary btn-small">✏️</button>` : ''}
-                <button onclick="deletePoint(${index})" class="btn btn-danger btn-small">🗑️</button>
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 
     // Setup drag and drop
     setupDragAndDrop();
@@ -452,10 +508,13 @@ function loadTripData(trip) {
                 type: 'poi',
                 coordinates: point.coordinates,
                 data: {
-                    name: point.name,
+                    title: point.title,
+                    subtitle: point.subtitle,
                     description: point.description,
                     photo: point.photo,
-                    missionLink: point.missionLink
+                    missionLink: point.missionLink,
+                    hasLearningActivity: point.hasLearningActivity || false,
+                    learningActivityText: point.learningActivityText || ''
                 },
                 marker: marker
             };
@@ -538,11 +597,14 @@ function exportTrip() {
         .filter(p => p.type === 'poi')
         .map((p, index) => ({
             id: `poi-${Date.now()}-${index}`,
-            name: p.data.name,
+            title: p.data.title,
+            subtitle: p.data.subtitle,
             description: p.data.description,
             coordinates: p.coordinates,
             photo: p.data.photo,
             missionLink: p.data.missionLink,
+            hasLearningActivity: p.data.hasLearningActivity,
+            learningActivityText: p.data.learningActivityText,
             order: points.indexOf(p) + 1
         }));
 

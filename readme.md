@@ -1,4 +1,4 @@
-This is a mobile first website for students at school (1st grade to 8th) to do walking trips in Haifa, Israel in order to know their city.
+NaviGo is a mobile first website for students at school (1st grade to 8th) to do walking trips in Haifa, Israel in order to know their city.
 Teachers can define a trip for a specific grade (or more than one, for example a trip for 1st, 2nd and 3rd graders).
 Each trip is build from points of interests (locations in haifa) but the route should be defined as well. Each two points can have more than one route so that teachers should be able to define the route by adding "secondary points of interests" that are not defined as points of interests but are used to define the route.
 Each point of interest have a description, photo and a link for external website that has a mission for them.
@@ -8,6 +8,9 @@ Each trip has a title, description and a color.
 The website will be hosted on GitHub Pages.
 The design is modern minimalist apple style.
 Use Google Maps when needed.
+
+## Note for Claude Code Users
+When working with this project, please **do not commit or push** changes automatically. Always let the user handle commits and pushes manually.
 
 Each trip website shows the title of the trip. And a map showing the route of it. 
 Then under the map a list of the points of interest with info on them.

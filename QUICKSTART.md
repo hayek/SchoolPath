@@ -1,4 +1,4 @@
-# PathSchool - Quick Start Guide
+# NaviGo - Quick Start Guide
 
 ## Get Started in 5 Minutes! 🚀
 
@@ -58,7 +58,7 @@ Visit: `http://localhost:8000`
 ## Project Files Overview
 
 ```
-PathSchool/
+NaviGo/
 ├── 📄 index.html           → Main page (view all trips)
 ├── 📄 trip.html            → Individual trip page
 ├── 📄 creator.html         → Create new trips
