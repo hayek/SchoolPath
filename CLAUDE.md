@@ -69,7 +69,7 @@ See `DATA_STRUCTURE.md` for complete schema.
 ## Development Workflow
 
 ### Important Note
-Per the readme.md, **do not commit or push changes automatically**. Always let the user handle commits and pushes manually.
+Per the readme.md, **do not commit or push changes automatically**. Always let the user handle commits and pushes manually unless he asks to.
 
 ### Common Development Tasks
 
