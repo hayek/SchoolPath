@@ -132,6 +132,12 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="trip-duration">المدة الإجمالية للرحلة (ساعات:دقائق)</label>
+                        <input type="text" id="trip-duration" placeholder="02:30" pattern="\d{1,2}:\d{2}">
+                        <p style="font-size: 12px; color: var(--text-secondary); margin-top: var(--spacing-xs);">اختياري - بصيغة HH:MM</p>
+                    </div>
+
+                    <div class="form-group">
                         <label>الصفوف</label>
                         <div class="checkbox-group">
                             <label class="checkbox-label">
@@ -189,13 +195,18 @@
                     <div id="points-list"></div>
                 </div>
 
-                <!-- Export -->
+                <!-- Preview & Export -->
                 <div class="mt-lg">
-                    <button type="button" id="export-btn" class="btn btn-primary" style="width: 100%;">
-                        💾 تصدير JSON
-                    </button>
-                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: var(--spacing-xs);">
-                        سيتم تنزيل الملف تلقائيًا. قم برفعه إلى مجلد routes
+                    <div class="flex gap-sm" style="margin-bottom: var(--spacing-sm);">
+                        <button type="button" id="preview-btn" class="btn btn-secondary" style="flex: 1;">
+                            👁️ معاينة
+                        </button>
+                        <button type="button" id="export-btn" class="btn btn-primary" style="flex: 1;">
+                            💾 تصدير JSON
+                        </button>
+                    </div>
+                    <p style="font-size: 12px; color: var(--text-secondary);">
+                        اختبر الرحلة قبل التصدير، أو قم بتنزيل الملف وأضفه إلى مجلد routes
                     </p>
                 </div>
             </div>
@@ -207,7 +218,7 @@
                 </div>
 
                 <div id="poi-editor" class="card mt-lg" style="display: none;">
-                    <h3>تحرير نقطة الاهتمام</h3>
+                    <h3>تحرير نقطة الاهتمام <span id="poi-editor-number" style="color: var(--text-secondary); font-size: 0.9em;"></span></h3>
                     <form id="poi-form">
                         <div class="form-group">
                             <label for="poi-title">اسم المكان</label>

@@ -7,9 +7,32 @@ let userLocationTracking = null;
 // Get trip ID from URL
 const urlParams = new URLSearchParams(window.location.search);
 const tripId = urlParams.get('id');
+const isPreview = urlParams.get('preview') === 'true';
 
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', async () => {
+    // Check for preview mode
+    if (isPreview) {
+        const previewData = sessionStorage.getItem('previewTrip');
+        if (!previewData) {
+            document.getElementById('trip-title').textContent = 'خطأ في المعاينة';
+            document.getElementById('poi-list').innerHTML = '<div class="empty-state"><p>بيانات المعاينة غير متوفرة</p></div>';
+            return;
+        }
+
+        trip = JSON.parse(previewData);
+
+        // Initialize map
+        map = createMap('map', CONFIG.HAIFA_CENTER, CONFIG.DEFAULT_ZOOM);
+
+        // Add user location tracking with compass
+        userLocationTracking = addUserLocationTracking(map);
+
+        // Display the preview trip
+        await displayPreviewTrip();
+        return;
+    }
+
     if (!tripId) {
         document.getElementById('trip-title').textContent = 'لم يتم العثور على الرحلة';
         document.getElementById('poi-list').innerHTML = '<div class="empty-state"><p>معرّف الرحلة مفقود</p></div>';
@@ -68,6 +91,29 @@ async function loadTrip() {
     }
 }
 
+// Display preview trip (from creator)
+async function displayPreviewTrip() {
+    try {
+        // Display trip information
+        displayTripInfo();
+        await displayTripOnMap();
+        displayPointsOfInterest();
+        setupNavigationButton();
+
+        // Make map static with tap-to-activate overlay
+        makeMapStatic(map, 'map');
+
+    } catch (error) {
+        console.error('Error displaying preview trip:', error);
+        document.getElementById('trip-title').textContent = 'خطأ في المعاينة';
+        document.getElementById('poi-list').innerHTML = `
+            <div class="empty-state">
+                <p>لا يمكن عرض المعاينة</p>
+            </div>
+        `;
+    }
+}
+
 // Display trip information
 function displayTripInfo() {
     document.getElementById('trip-title').textContent = trip.title;
@@ -91,6 +137,12 @@ function displayTripInfo() {
                 <strong>نقاط الاهتمام:</strong>
                 <span>${trip.pointsOfInterest.length}</span>
             </div>
+            ${trip.duration ? `
+            <div class="flex gap-sm items-center">
+                <strong>المدة الإجمالية:</strong>
+                <span>${trip.duration}</span>
+            </div>
+            ` : ''}
         </div>
     `;
 }

@@ -55,6 +55,9 @@ function setupEventListeners() {
         addLearningTaskField();
     });
 
+    // Preview button
+    document.getElementById('preview-btn').addEventListener('click', previewTrip);
+
     // Export button
     document.getElementById('export-btn').addEventListener('click', exportTrip);
 }
@@ -156,6 +159,9 @@ function editPoint(index) {
     editingPointIndex = index;
     const point = points[index];
 
+    // Calculate POI number (count only POI type points up to this index)
+    const poiNumber = points.slice(0, index + 1).filter(p => p.type === 'poi').length;
+
     // Strip 'images/' prefix from photo path for display
     let photoValue = point.data.photo || '';
     if (photoValue.startsWith('images/')) {
@@ -167,6 +173,9 @@ function editPoint(index) {
     document.getElementById('poi-description').value = point.data.description || '';
     document.getElementById('poi-photo').value = photoValue;
     document.getElementById('poi-mission').value = point.data.missionLink || '';
+
+    // Show POI number in editor title
+    document.getElementById('poi-editor-number').textContent = `(${poiNumber})`;
 
     // Load learning tasks
     currentLearningTasks = point.data.learningTasks ? [...point.data.learningTasks] : [];
@@ -625,6 +634,9 @@ function loadTripData(trip) {
     document.getElementById('trip-title').value = trip.title;
     document.getElementById('trip-description').value = trip.description;
     document.getElementById('trip-color').value = trip.color;
+    if (trip.duration) {
+        document.getElementById('trip-duration').value = trip.duration;
+    }
 
     // Set grades checkboxes
     const gradeCheckboxes = document.querySelectorAll('input[name="grades"]');
@@ -736,27 +748,26 @@ function loadTripData(trip) {
     }
 }
 
-// Export trip as JSON
-function exportTrip() {
-    // Validate form
+// Build trip object from current form and points
+function buildTripObject() {
     const form = document.getElementById('trip-form');
     if (!form.checkValidity()) {
         form.reportValidity();
-        return;
+        return null;
     }
 
-    // Get form data
     const id = document.getElementById('trip-id').value;
     const title = document.getElementById('trip-title').value;
     const description = document.getElementById('trip-description').value;
     const color = document.getElementById('trip-color').value;
+    const duration = document.getElementById('trip-duration').value || null;
 
     const gradesCheckboxes = document.querySelectorAll('input[name="grades"]:checked');
     const grades = Array.from(gradesCheckboxes).map(cb => parseInt(cb.value));
 
     if (grades.length === 0) {
         alert('يجب اختيار صف واحد على الأقل');
-        return;
+        return null;
     }
 
     // Get POIs
@@ -776,14 +787,13 @@ function exportTrip() {
 
     if (pois.length === 0) {
         alert('يجب إضافة نقطة اهتمام واحدة على الأقل');
-        return;
+        return null;
     }
 
     // Get secondary points
     const secondaryPoints = points
         .filter(p => p.type === 'secondary')
         .map((p, index) => {
-            // Find the POI that comes before this secondary point
             const pointIndex = points.indexOf(p);
             let afterPOI = null;
             for (let i = pointIndex - 1; i >= 0; i--) {
@@ -811,6 +821,34 @@ function exportTrip() {
         pointsOfInterest: pois,
         secondaryPoints: secondaryPoints
     };
+
+    // Add optional duration if provided
+    if (duration) {
+        trip.duration = duration;
+    }
+
+    return trip;
+}
+
+// Preview trip in a new window
+function previewTrip() {
+    const trip = buildTripObject();
+    if (!trip) return;
+
+    // Store trip data in session storage for preview
+    sessionStorage.setItem('previewTrip', JSON.stringify(trip));
+
+    // Open preview window
+    const previewWindow = window.open('trip.html?preview=true', 'previewTrip', 'width=1200,height=800');
+    if (!previewWindow) {
+        alert('تعذر فتح نافذة المعاينة. يرجى السماح بالنوافذ المنبثقة.');
+    }
+}
+
+// Export trip as JSON
+function exportTrip() {
+    const trip = buildTripObject();
+    if (!trip) return;
 
     // Download as JSON
     const dataStr = JSON.stringify(trip, null, 2);
