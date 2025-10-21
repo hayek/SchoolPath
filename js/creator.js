@@ -134,7 +134,6 @@ function addPoint(latlng, type) {
             description: '',
             photo: '',
             missionLink: '',
-            hasLearningActivity: false,
             learningTasks: []
         } : null,
         marker: marker
@@ -168,7 +167,6 @@ function editPoint(index) {
     document.getElementById('poi-description').value = point.data.description || '';
     document.getElementById('poi-photo').value = photoValue;
     document.getElementById('poi-mission').value = point.data.missionLink || '';
-    document.getElementById('poi-has-learning-activity').checked = point.data.hasLearningActivity || false;
 
     // Load learning tasks
     currentLearningTasks = point.data.learningTasks ? [...point.data.learningTasks] : [];
@@ -196,7 +194,6 @@ function savePOIEdit() {
         description: document.getElementById('poi-description').value,
         photo: photoValue,
         missionLink: document.getElementById('poi-mission').value,
-        hasLearningActivity: document.getElementById('poi-has-learning-activity').checked,
         learningTasks: [...currentLearningTasks]
     };
 
@@ -684,7 +681,6 @@ function loadTripData(trip) {
                     description: point.description,
                     photo: point.photo,
                     missionLink: point.missionLink,
-                    hasLearningActivity: point.hasLearningActivity || false,
                     learningTasks: point.learningTasks || []
                 },
                 marker: marker
@@ -774,7 +770,6 @@ function exportTrip() {
             coordinates: p.coordinates,
             photo: p.data.photo,
             missionLink: p.data.missionLink,
-            hasLearningActivity: p.data.hasLearningActivity,
             learningTasks: p.data.learningTasks || [],
             order: points.indexOf(p) + 1
         }));

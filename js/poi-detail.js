@@ -95,7 +95,7 @@ function displayPOIDetail() {
     // Display learning activities if available
     const learningActivitySection = document.getElementById('learning-activity-section');
     if (learningActivitySection) {
-        if (poi.hasLearningActivity && poi.learningTasks && poi.learningTasks.length > 0) {
+        if (poi.learningTasks && poi.learningTasks.length > 0) {
             const tasksHTML = poi.learningTasks.map((task, index) => {
                 const taskTitle = typeof task === 'string' ? task : task.title;
                 const taskBody = typeof task === 'object' ? task.body : '';

@@ -241,7 +241,7 @@ function displayPointsOfInterest() {
             </div>
         ` : '';
 
-        const learningActivityBox = poi.hasLearningActivity && poi.learningTasks && poi.learningTasks.length > 0 ?
+        const learningActivityBox = poi.learningTasks && poi.learningTasks.length > 0 ?
             poi.learningTasks.map((task, index) => {
                 const taskTitle = typeof task === 'string' ? task : task.title;
                 const taskBody = typeof task === 'object' ? task.body : '';
