@@ -108,6 +108,9 @@ async function displayTripOnMap() {
     // Fetch walking route from Geoapify
     await fetchWalkingRoute(allPoints);
 
+    // Track the currently open popup
+    let currentOpenMarker = null;
+
     // Add markers for POIs
     trip.pointsOfInterest.forEach((poi, index) => {
         const marker = createNumberedMarker(
@@ -131,6 +134,21 @@ async function displayTripOnMap() {
 
         marker.bindPopup(popup);
         marker.addTo(map);
+
+        // Close any open popups before opening a new one
+        marker.on('click', () => {
+            if (currentOpenMarker && currentOpenMarker !== marker) {
+                currentOpenMarker.closePopup();
+            }
+            currentOpenMarker = marker;
+        });
+
+        // Track when popup closes
+        marker.on('popupclose', () => {
+            if (currentOpenMarker === marker) {
+                currentOpenMarker = null;
+            }
+        });
 
         // Click handler on popup to navigate to POI detail page
         marker.on('popupopen', () => {

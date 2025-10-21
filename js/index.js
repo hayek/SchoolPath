@@ -62,6 +62,9 @@ async function displayTripsOnMap() {
 
     const allCoordinates = [];
 
+    // Track the currently open popup
+    let currentOpenMarker = null;
+
     // Fetch walking routes for all trips
     for (const trip of trips) {
         // Combine POIs and secondary points, sort by order
@@ -87,6 +90,21 @@ async function displayTripsOnMap() {
                     <h3 style="margin: 0; font-size: 16px;">${trip.title}</h3>
                 </div>
             `);
+
+            // Close any open popups before opening a new one
+            marker.on('click', () => {
+                if (currentOpenMarker && currentOpenMarker !== marker) {
+                    currentOpenMarker.closePopup();
+                }
+                currentOpenMarker = marker;
+            });
+
+            // Track when popup closes
+            marker.on('popupclose', () => {
+                if (currentOpenMarker === marker) {
+                    currentOpenMarker = null;
+                }
+            });
 
             marker.addTo(map);
 
