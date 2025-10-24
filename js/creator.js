@@ -857,7 +857,7 @@ function exportTrip() {
 
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${id}.json`;
+    link.download = `${trip.id}.json`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
