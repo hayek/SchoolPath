@@ -304,7 +304,7 @@ function displayPointsOfInterest() {
         const descriptionBox = poi.description ? `
             <div style="padding: 24px; background: #f0f7ff; border-left: 6px solid #007AFF; border-radius: var(--radius-md); cursor: pointer; display: flex; flex-direction: column; gap: 12px; margin-top: var(--spacing-md);" onclick="navigateToPOI('${trip.id}', '${poi.id}', event)">
                 <div style="display: flex; align-items: center; gap: 16px;">
-                    <img src="assets/Read.svg" alt="وصف" style="width: 28px; height: 28px; filter: invert(0.2); flex-shrink: 0;">
+                    <img src="assets/read.svg" alt="وصف" style="width: 28px; height: 28px; filter: invert(0.2); flex-shrink: 0;">
                     <strong style="color: #007AFF; font-size: 16px;">اقرأ المزيد</strong>
                 </div>
                 <p style="margin: 0; color: #333; font-size: 14px; line-height: 1.6;">${getFirstLine(poi.description)}</p>
