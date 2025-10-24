@@ -1,9 +1,9 @@
 {
     "trips": [
-        "wadi-nisnas.json",
         "carmel-center.json",
         "gan-atsmaoot.json",
         "gan-hame.json",
-        "library.json"
+        "library.json",
+        "wadi-nisnas.json"
     ]
 }
