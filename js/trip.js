@@ -315,25 +315,55 @@ function displayPointsOfInterest() {
             poi.learningTasks.map((task, index) => {
                 const taskTitle = typeof task === 'string' ? task : task.title;
                 const taskBody = typeof task === 'object' ? task.body : '';
-                const taskUrl = typeof task === 'object' ? task.url : '';
-                const taskUrlTitle = typeof task === 'object' ? (task.urlTitle || 'رابط النشاط') : 'رابط النشاط';
+                const taskLinks = typeof task === 'object' ? (task.links || []) : [];
+                const taskUrl = typeof task === 'object' ? task.url : ''; // Support legacy format
+                const taskUrlTitle = typeof task === 'object' ? (task.urlTitle || 'رابط النشاط') : 'رابط النشاط'; // Support legacy format
                 const taskPdfs = typeof task === 'object' ? task.pdfs : [];
                 const taskColor = typeof task === 'object' ? (task.color || '#ff69b4') : '#ff69b4';
 
                 const taskBgColor = taskColor + '20'; // 20 = ~12% opacity
                 const taskPdfBgColor = taskColor + '30'; // 30 = ~19% opacity
 
+                // Helper function to detect YouTube URLs
+                function isYouTubeUrl(url) {
+                    return url.includes('youtube.com') || url.includes('youtu.be');
+                }
+
+                const hasContent = taskBody || taskLinks.length > 0 || taskUrl || (taskPdfs && taskPdfs.length > 0);
+
                 return `
                     <div style="padding: 20px; background: ${taskBgColor}; border-left: 6px solid ${taskColor}; border-radius: var(--radius-md); margin-top: var(--spacing-md);">
-                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: ${taskBody || taskUrl || (taskPdfs && taskPdfs.length > 0) ? '12px' : '0'};">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: ${hasContent ? '12px' : '0'};">
                             <img src="assets/idea.svg" alt="نشاط تعليمي" style="width: 24px; height: 24px; filter: invert(0.2);">
                             <strong style="color: ${taskColor}; font-size: 15px;">${taskTitle}</strong>
                         </div>
-                        ${taskBody || taskUrl || (taskPdfs && taskPdfs.length > 0) ? `
+                        ${hasContent ? `
                             <div style="padding-right: 36px;">
                                 ${taskBody ? `<p style="margin: 0 0 8px 0; color: #333; font-size: 13px; line-height: 1.5; white-space: pre-wrap;">${taskBody}</p>` : ''}
+                                ${taskLinks && taskLinks.length > 0 ? `
+                                    <div style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 8px;">
+                                        ${taskLinks.map(link => {
+                                            const isYouTube = isYouTubeUrl(link.url);
+                                            return `
+                                                <a href="${link.url}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; color: ${taskColor}; text-decoration: none; font-size: 14px; padding: 10px 14px; background: white; border: 2px solid ${taskColor}; border-radius: 8px; font-weight: 500;" onclick="event.stopPropagation();">
+                                                    ${isYouTube ? `
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                                                        </svg>
+                                                    ` : `
+                                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                                            <path d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/>
+                                                            <path d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/>
+                                                        </svg>
+                                                    `}
+                                                    ${link.title}
+                                                </a>
+                                            `;
+                                        }).join('')}
+                                    </div>
+                                ` : ''}
                                 ${taskUrl ? `
-                                    <a href="${taskUrl}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; color: ${taskColor}; text-decoration: none; font-size: 14px; padding: 10px 14px; background: white; border: 2px solid ${taskColor}; border-radius: 8px; margin-bottom: 8px; font-weight: 500;" onclick="event.stopPropagation();">
+                                    <a href="${taskUrl}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; color: ${taskColor}; text-decoration: none; font-size: 14px; padding: 10px 14px; background: white; border: 2px solid ${taskColor}; border-radius: 8px; margin-top: ${taskLinks.length > 0 ? '8px' : '0'}; margin-bottom: 8px; font-weight: 500;" onclick="event.stopPropagation();">
                                         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                                             <path d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/>
                                             <path d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/>

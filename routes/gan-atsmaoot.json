@@ -42,7 +42,8 @@
           "url": "",
           "urlTitle": "",
           "pdfs": [],
-          "color": "#ff69b4"
+          "color": "#ff69b4",
+          "links": []
         }
       ],
       "order": 6
@@ -65,7 +66,8 @@
           "url": "",
           "urlTitle": "",
           "pdfs": [],
-          "color": "#ff69b4"
+          "color": "#ff69b4",
+          "links": []
         }
       ],
       "order": 8

@@ -485,6 +485,34 @@ function removePdfFromTask(taskIndex, pdfIndex) {
     }
 }
 
+function addLinkToTask(index) {
+    const url = prompt('أدخل الرابط (URL):');
+    if (url && url.trim()) {
+        if (!currentLearningTasks[index].links) {
+            currentLearningTasks[index].links = [];
+        }
+        const title = prompt('أدخل عنوان الرابط (اختياري):', 'رابط');
+        currentLearningTasks[index].links.push({
+            url: url.trim(),
+            title: title ? title.trim() : 'رابط'
+        });
+        displayLearningTasks();
+    }
+}
+
+function removeLinkFromTask(taskIndex, linkIndex) {
+    if (currentLearningTasks[taskIndex] && currentLearningTasks[taskIndex].links) {
+        currentLearningTasks[taskIndex].links.splice(linkIndex, 1);
+        displayLearningTasks();
+    }
+}
+
+function updateLinkInTask(taskIndex, linkIndex, field, value) {
+    if (currentLearningTasks[taskIndex] && currentLearningTasks[taskIndex].links && currentLearningTasks[taskIndex].links[linkIndex]) {
+        currentLearningTasks[taskIndex].links[linkIndex][field] = value;
+    }
+}
+
 function displayLearningTasks() {
     const container = document.getElementById('learning-tasks-list');
 
@@ -496,8 +524,7 @@ function displayLearningTasks() {
     container.innerHTML = currentLearningTasks.map((task, index) => {
         const taskTitle = typeof task === 'string' ? task : (task.title || '');
         const taskBody = typeof task === 'object' ? (task.body || '') : '';
-        const taskUrl = typeof task === 'object' ? (task.url || '') : '';
-        const taskUrlTitle = typeof task === 'object' ? (task.urlTitle || '') : '';
+        const taskLinks = typeof task === 'object' ? (task.links || []) : [];
         const taskPdfs = typeof task === 'object' ? (task.pdfs || []) : [];
         const taskColor = typeof task === 'object' ? (task.color || '#ff69b4') : '#ff69b4';
 
@@ -536,25 +563,42 @@ function displayLearningTasks() {
                     </div>
 
                     <div>
-                        <label style="display: block; margin-bottom: 4px; font-size: 13px; font-weight: 600;">رابط URL (اختياري)</label>
-                        <input
-                            type="url"
-                            value="${taskUrl}"
-                            onchange="updateLearningTaskField(${index}, 'url', this.value)"
-                            placeholder="https://example.com"
-                            style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px;"
-                        >
-                    </div>
-
-                    <div>
-                        <label style="display: block; margin-bottom: 4px; font-size: 13px; font-weight: 600;">عنوان الرابط (اختياري)</label>
-                        <input
-                            type="text"
-                            value="${taskUrlTitle}"
-                            onchange="updateLearningTaskField(${index}, 'urlTitle', this.value)"
-                            placeholder="مثال: شاهد الفيديو، اقرأ المزيد"
-                            style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px;"
-                        >
+                        <label style="display: block; margin-bottom: 4px; font-size: 13px; font-weight: 600;">الروابط (اختياري)</label>
+                        ${taskLinks.length > 0 ? `
+                            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px;">
+                                ${taskLinks.map((link, linkIndex) => `
+                                    <div style="display: flex; flex-direction: column; gap: 6px; padding: 8px; background: var(--surface); border-radius: 4px;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <input
+                                                type="url"
+                                                value="${link.url}"
+                                                onchange="updateLinkInTask(${index}, ${linkIndex}, 'url', this.value)"
+                                                placeholder="https://example.com"
+                                                style="flex: 1; padding: 6px; border: 1px solid var(--border); border-radius: 3px; font-size: 12px;"
+                                            >
+                                            <button
+                                                type="button"
+                                                onclick="removeLinkFromTask(${index}, ${linkIndex})"
+                                                class="btn btn-danger btn-small"
+                                                style="padding: 2px 8px; font-size: 12px;"
+                                            >✕</button>
+                                        </div>
+                                        <input
+                                            type="text"
+                                            value="${link.title}"
+                                            onchange="updateLinkInTask(${index}, ${linkIndex}, 'title', this.value)"
+                                            placeholder="عنوان الرابط (مثال: شاهد الفيديو)"
+                                            style="width: 100%; padding: 6px; border: 1px solid var(--border); border-radius: 3px; font-size: 12px;"
+                                        >
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                        <button
+                            type="button"
+                            onclick="addLinkToTask(${index})"
+                            class="btn btn-secondary btn-small"
+                        >+ إضافة رابط</button>
                     </div>
 
                     <div>
