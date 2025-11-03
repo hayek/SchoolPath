@@ -205,7 +205,7 @@ function displayTripsList() {
                     <div class="trip-header">
                         <div class="trip-header-content">
                             <h3>${trip.title}</h3>
-                            <p>${trip.description}</p>
+                            <p class="trip-description">${trip.description}</p>
                             ${trip.duration ? `<span style="font-size: 12px; color: var(--text-secondary);">⏱️ ${trip.duration}</span>` : ''}
                         </div>
                         <button class="copy-btn" onclick="event.stopPropagation(); copyTripUrl('${trip.id}', this)" title="نسخ رابط الرحلة">

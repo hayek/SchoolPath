@@ -338,6 +338,14 @@ header {
     flex: 1;
 }
 
+.trip-description {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    white-space: pre-line;
+}
+
 .trip-meta {
     display: flex;
     gap: var(--spacing-sm);

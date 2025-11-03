@@ -291,14 +291,18 @@ function displayPointsOfInterest() {
     const sortedPOIs = [...trip.pointsOfInterest].sort((a, b) => a.order - b.order);
 
     poiList.innerHTML = sortedPOIs.map((poi, index) => {
-        // Get first line of description (truncate at first newline or after 100 characters)
+        // Get first 3 lines of description (truncate at first 3 newlines or after 300 characters)
         const getFirstLine = (text) => {
             if (!text) return '';
-            const firstLine = text.split('\n')[0];
-            if (firstLine.length > 100) {
-                return firstLine.substring(0, 100) + '...';
+            const lines = text.split('\n');
+            const firstThreeLines = lines.slice(0, 3).join('\n');
+            const hasMoreLines = lines.length > 3;
+            const isTooLong = firstThreeLines.length > 300;
+
+            if (isTooLong) {
+                return firstThreeLines.substring(0, 300) + '...';
             }
-            return firstLine + '...';
+            return firstThreeLines + (hasMoreLines ? '\n...' : '...');
         };
 
         const descriptionBox = poi.description ? `
