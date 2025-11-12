@@ -741,6 +741,17 @@ textarea {
     position: sticky;
     top: 0;
     z-index: 1000;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    user-select: none;
+}
+
+.location-error-banner:hover {
+    background-color: #FFE69C;
+}
+
+.location-error-banner:active {
+    background-color: #FFD966;
 }
 
 /* Learning Activity Badge */

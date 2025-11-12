@@ -25,8 +25,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Initialize map
         map = createMap('map', CONFIG.HAIFA_CENTER, CONFIG.DEFAULT_ZOOM);
 
-        // Add user location tracking with compass
-        userLocationTracking = addUserLocationTracking(map);
+        // Show location permission explanation popup first
+        showLocationPermissionPopup();
 
         // Display the preview trip
         await displayPreviewTrip();
@@ -42,8 +42,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Initialize map
     map = createMap('map', CONFIG.HAIFA_CENTER, CONFIG.DEFAULT_ZOOM);
 
-    // Add user location tracking with compass
-    userLocationTracking = addUserLocationTracking(map);
+    // Show location permission explanation popup first
+    showLocationPermissionPopup();
 
     // Load trip data
     await loadTrip();
@@ -496,4 +496,281 @@ function copyCurrentTripUrl(button) {
         console.error('Failed to copy URL:', err);
         alert('فشل نسخ الرابط');
     });
+}
+
+// Show location help dialog
+function showLocationHelp() {
+    const errorBanner = document.getElementById('location-error');
+    const errorCode = errorBanner ? errorBanner.dataset.errorCode : null;
+
+    // Detect browser
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+    const isFirefox = /Firefox/.test(navigator.userAgent);
+
+    let instructions = '';
+
+    // Permission denied - show how to enable
+    if (errorCode == 1) {
+        if (isIOS) {
+            instructions = `
+                <h3 style="margin-top: 0; color: #007AFF;">كيفية تفعيل الموقع على iPhone/iPad:</h3>
+                <ol style="text-align: right; line-height: 1.8; padding-right: 20px;">
+                    <li>افتح <strong>الإعدادات</strong> (Settings)</li>
+                    <li>اذهب إلى <strong>الخصوصية والأمان</strong> (Privacy & Security)</li>
+                    <li>اضغط على <strong>خدمات الموقع</strong> (Location Services)</li>
+                    <li>تأكد من تفعيل خدمات الموقع</li>
+                    <li>ابحث عن <strong>Safari</strong> في القائمة</li>
+                    <li>اختر <strong>"أثناء استخدام التطبيق"</strong> (While Using the App)</li>
+                    <li>ارجع للمتصفح وأعد تحميل الصفحة</li>
+                </ol>
+            `;
+        } else if (isChrome) {
+            instructions = `
+                <h3 style="margin-top: 0; color: #007AFF;">كيفية تفعيل الموقع على Chrome:</h3>
+                <ol style="text-align: right; line-height: 1.8; padding-right: 20px;">
+                    <li>اضغط على أيقونة <strong>القفل</strong> 🔒 أو <strong>معلومات الموقع</strong> ℹ️ في شريط العنوان</li>
+                    <li>ابحث عن <strong>"الموقع"</strong> (Location)</li>
+                    <li>اختر <strong>"السماح"</strong> (Allow)</li>
+                    <li>أعد تحميل الصفحة</li>
+                </ol>
+                <p style="margin-top: 16px; padding: 12px; background: #f5f5f5; border-radius: 8px; font-size: 14px;">
+                    <strong>أو:</strong> اذهب إلى الإعدادات ← الخصوصية والأمان ← إعدادات الموقع ← الموقع
+                </p>
+            `;
+        } else if (isSafari) {
+            instructions = `
+                <h3 style="margin-top: 0; color: #007AFF;">كيفية تفعيل الموقع على Safari:</h3>
+                <ol style="text-align: right; line-height: 1.8; padding-right: 20px;">
+                    <li>اذهب إلى <strong>Safari</strong> في شريط القوائم</li>
+                    <li>اختر <strong>الإعدادات لهذا الموقع</strong></li>
+                    <li>بجانب <strong>"الموقع"</strong>، اختر <strong>"السماح"</strong></li>
+                    <li>أعد تحميل الصفحة</li>
+                </ol>
+            `;
+        } else if (isFirefox) {
+            instructions = `
+                <h3 style="margin-top: 0; color: #007AFF;">كيفية تفعيل الموقع على Firefox:</h3>
+                <ol style="text-align: right; line-height: 1.8; padding-right: 20px;">
+                    <li>اضغط على أيقونة <strong>القفل</strong> 🔒 في شريط العنوان</li>
+                    <li>اضغط على السهم <strong>←</strong> بجانب "الاتصال آمن"</li>
+                    <li>اضغط على <strong>"مزيد من المعلومات"</strong></li>
+                    <li>اذهب إلى تبويب <strong>"الأذونات"</strong></li>
+                    <li>ابحث عن <strong>"مشاركة الموقع"</strong> وقم بإلغاء تحديد <strong>"استخدام الافتراضي"</strong></li>
+                    <li>ضع علامة على <strong>"السماح"</strong></li>
+                    <li>أعد تحميل الصفحة</li>
+                </ol>
+            `;
+        } else {
+            instructions = `
+                <h3 style="margin-top: 0; color: #007AFF;">كيفية تفعيل الموقع:</h3>
+                <ol style="text-align: right; line-height: 1.8; padding-right: 20px;">
+                    <li>ابحث عن أيقونة <strong>القفل</strong> 🔒 أو <strong>الإعدادات</strong> ⚙️ في شريط العنوان</li>
+                    <li>ابحث عن إعدادات <strong>"الموقع"</strong> أو <strong>"الأذونات"</strong></li>
+                    <li>اختر <strong>"السماح"</strong> لهذا الموقع</li>
+                    <li>أعد تحميل الصفحة</li>
+                </ol>
+            `;
+        }
+    } else {
+        // Other errors - general troubleshooting
+        instructions = `
+            <h3 style="margin-top: 0; color: #007AFF;">نصائح لحل المشكلة:</h3>
+            <ul style="text-align: right; line-height: 1.8; padding-right: 20px;">
+                <li>تأكد من تفعيل <strong>خدمات الموقع</strong> على جهازك</li>
+                <li>تأكد من اتصالك بالإنترنت</li>
+                <li>جرّب إعادة تحميل الصفحة</li>
+                <li>إذا كنت في مكان مغلق، جرّب الانتقال إلى مكان مفتوح</li>
+                <li>تأكد من تفعيل GPS على جهازك</li>
+            </ul>
+        `;
+    }
+
+    // Create modal dialog
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        padding: 20px;
+    `;
+
+    modal.innerHTML = `
+        <div style="
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        ">
+            ${instructions}
+            <button onclick="this.closest('div[style*=fixed]').remove()" style="
+                width: 100%;
+                padding: 12px;
+                background: #007AFF;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-size: 16px;
+                font-weight: 600;
+                cursor: pointer;
+                margin-top: 20px;
+            ">فهمت</button>
+        </div>
+    `;
+
+    // Close on backdrop click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+
+    document.body.appendChild(modal);
+}
+
+// Show location permission explanation popup before requesting permission
+function showLocationPermissionPopup() {
+    // Check if user has already seen this popup in this session
+    if (sessionStorage.getItem('locationPopupShown')) {
+        // Already shown, just request location directly
+        userLocationTracking = addUserLocationTracking(map);
+        return;
+    }
+
+    // Create modal
+    const modal = document.createElement('div');
+    modal.id = 'location-permission-popup';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        padding: 20px;
+        animation: fadeIn 0.3s ease;
+    `;
+
+    modal.innerHTML = `
+        <div style="
+            background: white;
+            border-radius: 16px;
+            padding: 32px 24px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            animation: slideUp 0.3s ease;
+        ">
+            <div style="
+                font-size: 48px;
+                margin-bottom: 16px;
+            ">📍</div>
+
+            <h3 style="
+                margin: 0 0 16px 0;
+                color: #007AFF;
+                font-size: 20px;
+                font-weight: 600;
+            ">نحتاج إلى موقعك</h3>
+
+            <p style="
+                margin: 0 0 24px 0;
+                color: #666;
+                font-size: 16px;
+                line-height: 1.6;
+            ">لكي نتمكن من إظهار موقعك على الخريطة ومساعدتك في التنقل خلال الرحلة، سنطلب منك السماح بالوصول إلى موقعك الجغرافي.</p>
+
+            <p style="
+                margin: 0 0 24px 0;
+                padding: 16px;
+                background: #f0f7ff;
+                border-radius: 12px;
+                color: #007AFF;
+                font-size: 14px;
+                font-weight: 500;
+            ">⚠️ يرجى الضغط على "السماح" عندما يظهر الطلب</p>
+
+            <button id="request-location-btn" style="
+                width: 100%;
+                padding: 14px;
+                background: #007AFF;
+                color: white;
+                border: none;
+                border-radius: 12px;
+                font-size: 17px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: background 0.2s ease;
+            ">فهمت، المتابعة</button>
+        </div>
+    `;
+
+    // Add hover effect to button
+    const button = modal.querySelector('#request-location-btn');
+    button.addEventListener('mouseenter', () => {
+        button.style.background = '#0051D5';
+    });
+    button.addEventListener('mouseleave', () => {
+        button.style.background = '#007AFF';
+    });
+
+    // Handle button click
+    button.addEventListener('click', () => {
+        // Mark as shown for this session
+        sessionStorage.setItem('locationPopupShown', 'true');
+
+        // Add fade out animation
+        modal.style.animation = 'fadeOut 0.3s ease';
+
+        // Remove modal after animation
+        setTimeout(() => {
+            modal.remove();
+        }, 300);
+
+        // Now request location permission - this will trigger browser's native prompt
+        userLocationTracking = addUserLocationTracking(map);
+    });
+
+    // Add CSS animations
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+
+    document.body.appendChild(modal);
 }

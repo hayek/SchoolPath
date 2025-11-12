@@ -469,8 +469,30 @@ function addUserLocationTracking(map) {
         (error) => {
             console.error('Error getting location:', error);
             const errorBanner = document.getElementById('location-error');
+            const errorMessage = document.getElementById('location-error-message');
+
             if (errorBanner) {
                 errorBanner.style.display = 'block';
+
+                // Store error code for help dialog
+                errorBanner.dataset.errorCode = error.code;
+
+                // Update message based on error type
+                if (errorMessage) {
+                    switch(error.code) {
+                        case 1: // PERMISSION_DENIED
+                            errorMessage.textContent = '⚠️ تم رفض الوصول إلى الموقع';
+                            break;
+                        case 2: // POSITION_UNAVAILABLE
+                            errorMessage.textContent = '⚠️ الموقع غير متوفر حالياً';
+                            break;
+                        case 3: // TIMEOUT
+                            errorMessage.textContent = '⚠️ انتهت مهلة تحديد الموقع';
+                            break;
+                        default:
+                            errorMessage.textContent = '⚠️ تعذر الحصول على موقعك';
+                    }
+                }
             }
         },
         {
